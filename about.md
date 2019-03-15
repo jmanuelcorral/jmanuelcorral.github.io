@@ -1,14 +1,14 @@
 ---
 layout: page
 title: Sobre Mi
-description: The story of a Bucket
-quote: "Stand aside. Giggle."
+description: Quien soy
+quote: "¡En mi máquina Funciona!"
 permalink: /about/
 ---
 
 <center><img src = "{{ site.url }}/images/{{ site.owner.avatar }}" style = "border: 1px #fff solid; border-radius: 100%; width: 50%;"></center>
 
-<span class = "initial">"A</span>migo lector, llevo más de 10 años desarrollando, he trabajado profesionalmente con Java, .net y Javascript.
+<span class = "initial">A</span>migo lector, llevo más de 10 años desarrollando, he trabajado profesionalmente con Java, .net y Javascript.
 Mi stack es muy diverso, actualmente sobrevivo a tecnologias y proyectos en: .Net, .Net Core, nodejs, Javascript, VueJs, Docker, Kubernetes, SQL Server, IIS, Azure, AzureDevOps, etc.
 
 Escribo este blog por que me hago mayor 😉, tengo Overflow de información, y necesito realizar un volcado de todo lo que voy aprendiendo, por si necesito revisitar algo en un tiempo.
