@@ -16,7 +16,7 @@ owner:
   avatar:         avatar.jpg
   bio:            
   email:          jose.manuel.corral@gmail.com
-  twitter:        
+  twitter:        jmanuelcorral
   github:         jmanuelcorral
   instagram:      
   dribbble:
@@ -36,7 +36,7 @@ opengraph:
 # Links to include in top navigation
 # For external links add external: true
 links:
-  - title: About
+  - title: Sobre Mí
     url: /about
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
