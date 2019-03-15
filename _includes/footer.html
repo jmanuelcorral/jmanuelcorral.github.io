@@ -2,7 +2,7 @@
   <footer>
     <aside class="wrap">
       <ol class="prev-posts">
-        <p class="list-title">Recent Posts</p>
+        <p class="list-title">Post recientes</p>
         {% for post in site.posts | limit:3 %} <!-- for1 -->
             <li>
               <span class="recent-title"><a href="{{ site.url }}{{ post.url }}{{ site.file_end }}" title="{{ post.title }}">{{ post.title | strip_html | strip_newlines | truncate: 30 }} </a></span>
