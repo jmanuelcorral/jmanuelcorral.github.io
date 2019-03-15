@@ -12,16 +12,16 @@ canonical: espresso-math.github.io
 
 # Owner/author information
 owner:
-  name:           Adrian Glitch
+  name:           Jose Manuel Corral
   avatar:         avatar.jpg
   bio:            
-  email:          adrianglitch.auth@gmail.com
+  email:          jose.manuel.corral@gmail.com
   twitter:        
-  github:         espresso-math
+  github:         jmanuelcorral
   instagram:      
   dribbble:
-  googleplus:     https://plus.google.com/u/3/105796012708469039091       
-  disqus:         espresso-math
+  googleplus:           
+  disqus:         jmanuelcorral
   location:       
   # Plug in your disqus shortname!
 
@@ -31,7 +31,7 @@ tools:
 
 # Open Graph customization
 opengraph:
-  locale:           en_US
+  locale:           es_ES
 
 # Links to include in top navigation
 # For external links add external: true
@@ -40,7 +40,7 @@ links:
     url: /about
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-timezone:    America/New_York
+timezone:    Europe/Madrid
 future:      true
 highlighter: pygments
 markdown:    kramdown
