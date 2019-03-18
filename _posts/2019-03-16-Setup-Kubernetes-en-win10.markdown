@@ -2,7 +2,7 @@
 layout: post
 title: Configurando Kubernetes en Windows 10    
 description: "Configurar Kubernetes en Windows 10 para montar un cluster no es un camino de rosas, pero aquí te enseño algun truco que te puede ayudar a desatascar cosas."
-mathjax: true
+mathjax: false
 typefix:
    indent: true
 date: 2019-03-18T10:31:56-05:00
