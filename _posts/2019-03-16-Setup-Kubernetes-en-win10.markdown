@@ -5,6 +5,9 @@ description: "Configurar Kubernetes en Windows 10 para montar un cluster no es u
 mathjax: false
 typefix:
    indent: true
+tags: [Kubernetes, Principiante, Windows, Trucos]
+image:
+  feature: "photo-1494412651409-8963ce7935a7.jfif"
 date: 2019-03-18T10:31:56-05:00
 ---
 Es complicado echar a andar Kubernetes en windows 10. A mi me ha costado un poco, quería empezar a hacer pruebas y no ha sido tan sencillo como esperaba.
