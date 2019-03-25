@@ -2,6 +2,7 @@
 layout: post
 title: Pon un kibana en tu vida  
 description: "Nunca ha sido más facil añadir soporte a tu aplicativo para que funcione con los productos de Elastic Logstash y Kibana"
+comments: true
 mathjax: false
 typefix:
    indent: true
