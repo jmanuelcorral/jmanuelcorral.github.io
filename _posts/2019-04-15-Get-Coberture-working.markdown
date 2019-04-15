@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Añadiendo Cobertura a tus tests en netcore
+title: Añade cobertura a tus tests en netcore
 description: "Una receta simple que funciona en local y Azure DevOps"
 comments: true
 mathjax: false
