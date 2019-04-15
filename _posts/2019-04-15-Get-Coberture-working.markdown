@@ -103,4 +103,4 @@ Una vez lo tengais instalado, podeis lanzarlo así:
 reportgenerator -reports:tests/MiAppMolona.Tests/**/coverage.cobertura.xml -targetdir:./CodeCoverage -reporttypes:HtmlInline_AzurePipelines
 ```
 
-y obtendreis un bonito report de html en la caperta CodeCoverage
+y obtendreis un bonito report de html en la caperta CodeCoverage, si lanzais la build de Azure Devops, el report se os genera en una tab junto al report de los tests 😎.
