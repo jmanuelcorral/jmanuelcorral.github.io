@@ -12,28 +12,32 @@ image:
 date: 2020-06-04T10:31:56-05:00
 ---
 
-Una de las cosas que más me encuentro a la hora de enfocar un proyecto dentro de un equipo, es que cada uno tiene una forma diferente de hacer logica de validación.
+Una de las cosas que más me encuentro a la hora de enfocar un proyecto dentro de un equipo, es que cada uno tiene una forma diferente de hacer lógica de validación.
 
 En mi caso, estructuro 2 tipos de validación:
 
 - Validación de una Boundary (es la validación en la que necesitamos ir a base de datos a consultar, etc).
 - Validación de Negocio.
 
-En este post me centro en la **validación de negocio**.
+En este post me centraré en la **validación de negocio**.
 
-A dia de hoy, no creo ni en DataAnnotations, ni en FluentValidations, ni en nada por el estilo. Creo que tienen su popularidad, pero contribuyen a crear un sistema anémico en vez de rico.
+A dia de hoy en un proyecto que se que va a crecer (en el que entonces apuesto por DDD), no creo ni en DataAnnotations, ni en FluentValidations, ni en nada por el estilo. Creo que tienen su popularidad, pero contribuyen a crear un sistema anémico en vez de rico.
 
-Muchos developers dicen que es bueno tener lógica de validación en  DataAnnotations, por que es el punto de entrada a tu sistema, otros, más puristas, dirán que estas añadiendo responsabilidades al Dto que las utiliza y que "Rompe" SOLID. Soluciones a ese problema hay muchas, una de ellas es utilizar FluentValidation, un framework que nos permite separar la logica de validación del DTO, pero al final sigues teniendo el problema de que en tu negocio tendrás que volver a pasar esas validaciones en determinados casos en diferentes puntos, y no solo por ejemplo en un controller, por lo que tendrás la misma validación en diferentes sitios.
+Muchos developers dicen que es bueno tener lógica de validación en  DataAnnotations, por que es el punto de entrada a tu sistema, otros, algo más puristas, dirán que estas añadiendo responsabilidades al Dto que las utiliza y que "Rompe" SOLID. 
+
+Reconozco que yo en mi juventud también pasé por esas fases 😎.
+
+Soluciones a ese problema hay muchas, una de ellas es utilizar FluentValidation, un framework que nos permite separar la logica de validación del DTO, pero al final sigues teniendo el problema de que en tu negocio tendrás que volver a pasar esas validaciones en determinados casos en diferentes puntos, y no solo por ejemplo en un controller, por lo que tendrás la misma validación en diferentes sitios.
 
 ## Entities Válidas
 
-Yo parto de la base que una Entity en nuestro dominio, sólo puede existir si es válida. Si puedo construir mi objeto de negocio, es que lo que contiene es válido.
+En mi concepción de DDD parto siempre de la premisa de que una Entity en nuestro dominio, sólo puede existir si es válida. Si puedo construir mi objeto de negocio, es que lo que contiene dentro es válido.
 
 Para hacer esto tenemos muchos mecanismos. Pero el que más utilizo es de Vladimir Khorikov, Utilizar su librería C# Functional Extensions.
 
 ## Ejemplo
 
-Tomaré como ejemplo una entidad de dominio anémica y a partir de ahí iré refactorizando. Por ejemplo aqui la tenemos:
+Tomaré como ejemplo una entidad de dominio anémica y a partir de ahí iré refactorizando. Por ejemplo la entidad Banco:
 
 ```csharp
 public class Bank
@@ -44,7 +48,7 @@ public class Bank
 }
 ```
 
-Lo primero que haremos es trasladar la logica de validación a cada uno de nuestras propiedades. En el caso de Hacerlo con las C# Functional Extensions queda algo así:
+Lo primero que haremos es trasladar la logica de validación a cada uno de nuestras propiedades. En el caso de aprovechar las C# Functional Extensions, podemos utilizar Result y una vez implementado queda algo así:
 
 ```csharp
 public class Bank
@@ -73,7 +77,7 @@ public class Bank
 }
 ```
 
-Si te fijas, de esta forma, tu objeto **Muta** cada vez que hacemos un Set, pero si el set es Inválido, tendremos un mensaje de error, y el objeto no habrá mutado. 
+Si te fijas, de esta forma, tu objeto **Muta** cada vez que hacemos un Set válido, pero si el set es Inválido, tendremos un mensaje de error, y el objeto no habrá mutado. El Objeto result te da un contrato muy util, si su propiedad Success es true, puedes obtener tu objeto **Mutado** al nuevo estado en la propiedad Value. Si no Tendrás el Mensaje de error en la propiedad Error. ¿Fácil no? 
 
 Lo interesante viene ahora. Siguiendo el ejemplo para nuestro negocio un BIC, es un codigo bancario,que puede tener entre 8 y 11 dígitos (los 3 últimos son opcionales):
 
@@ -82,13 +86,13 @@ Lo interesante viene ahora. Siguiendo el ejemplo para nuestro negocio un BIC, es
 - Código de localidad: el séptimo y octavo número representa a la ciudad de la entidad bancaria. Lo más habitual es que sea Madrid (MM) o Barcelona (BB).
 - Código de oficina: los últimos tres dígitos sirven para identificar una oficina concreta de la entidad financiera. Estos tres números son opcionales, si no aparecen en el código, se entiende que representa a la oficina principal de la entidad.
 
-Hacer esa lógica en un Set es una cosa que probablemente nos chirríe a primera vista. 
+Hacer esa lógica en un SetBic es una cosa que probablemente nos chirríe a primera vista. 
 
 En este momento, hay developers que te dicen, que lo suyo sería hacer un Helper, o Un servicio de Dominio. Tanto si decides hacer un helper como un servicio de dominio, te vas a enfrentar al problema de que no hay forma de que puedas obligar a otros developers a pasar por ese servicio o helper por diseño (no deberías acoplarlo a la entity), y ya sea por desconocimiento o falta de voluntad, puede que alguien de tu equipo no acabe encontrando ese helper o servicio. Por lo que esa validación con el paso del tiempo podría crecer reimplementándose en varios helpers, rompiendo el principio DRY. 
 
 Pero en DDD tenemos los ValueObjects para esto. Al final un ValueObject no tiene "identidad" por si mismo pero si lógica de negocio que puede ser reutilizable.
 
-podríamos hacer un ValueObject tal que así:
+podríamos hacer un ValueObject parecido a este:
 
 ```csharp
 public class BicCode
@@ -172,7 +176,9 @@ public Result<Bank> SetBIC(string value)
 }
 ```
 
-Si te fijas, una máxima que hemos de seguir y que aún no hemos aplicado en nuestra entity, es que si quiero crear algo en nuestro dominio, no podemos recurrir a un constructor, ya que los constructores aunque son parametrizables, no devuelven estado de lo que se crea. Es por eso, que lo que debemos hacer, es recurrir a una función estática que nos permita construir nuestro objeto de negocio si y solo si es válido, y para que puedan crear instancias de nuestro objeto si no es desde este método, deberemos de hacer que el constructor por defecto sea privado.
+Si nos fijamos, una máxima que hemos de seguir y que aún no hemos aplicado en nuestra entity, es que si quiero crear algo en nuestro dominio, no podemos recurrir a un constructor, ya que los constructores aunque son parametrizables, no devuelven estado de lo que se crea. Es por eso que no nos sirven en este caso para construir Objetos con Validación. 
+
+Lo que debemos hacer, es recurrir a una función estática que nos permita construir nuestro objeto de negocio si y solo si es válido, y para que nadie pueda crear instancias de nuestro objeto si no es desde este método, deberemos de hacer que el constructor por defecto sea privado.
 
 ```csharp
 
@@ -189,7 +195,7 @@ public static Result<Bank> Create(string code, string name, string bic)
 }
 ```
 
-Esa clase Constraints, es un pequeño Helper que os dejo en el repositorio de Github, que ayuda a que el código sea un poco más legible.
+Esa clase Constraints, es un pequeño Helper que os dejo en el repositorio de Github que acompaña el post, que ayuda a que el código sea un poco más legible.
 
 ## Ventajas de trabajar así
 
@@ -230,7 +236,7 @@ public void BankShouldPass(string code, string bicCode, string name)
 
 ```
 
-Y si Ahora devolviendo hacia fuera un resultado, ya sea desde un Command, una Query o directamente desde un Controller, este código es portable y fácil de transformar en una "salida" estandarizada.
+Y si ahora devolviendo hacia fuera un resultado, ya sea desde un Command, una Query o directamente desde un Controller, este código es portable y fácil de transformar en una "salida" estandarizada.
 
 ## Referencias y links de interés
 
@@ -239,3 +245,7 @@ https://docs.microsoft.com/es-es/aspnet/core/mvc/models/validation?view=aspnetco
 https://enterprisecraftsmanship.com/posts/validation-and-ddd/
 https://enterprisecraftsmanship.com/posts/functional-c-primitive-obsession/
 https://www.pluralsight.com/courses/refactoring-anemic-domain-model
+
+## Código de ejemplo
+
+https://github.com/jmanuelcorral/DDDValidations
