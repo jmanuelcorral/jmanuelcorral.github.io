@@ -240,11 +240,11 @@ Y si ahora devolviendo hacia fuera un resultado, ya sea desde un Command, una Qu
 
 ## Referencias y links de interés
 
-[https://fluentvalidation.net/](https://fluentvalidation.net/)
-[https://docs.microsoft.com/es-es/aspnet/core/mvc/models/validation?view=aspnetcore-3.1](https://docs.microsoft.com/es-es/aspnet/core/mvc/models/validation?view=aspnetcore-3.1)
-[https://enterprisecraftsmanship.com/posts/validation-and-ddd/](https://enterprisecraftsmanship.com/posts/validation-and-ddd/)
-[https://enterprisecraftsmanship.com/posts/functional-c-primitive-obsession/](https://enterprisecraftsmanship.com/posts/functional-c-primitive-obsession/)
-[https://www.pluralsight.com/courses/refactoring-anemic-domain-model](
+- [https://fluentvalidation.net/](https://fluentvalidation.net/)
+- [https://docs.microsoft.com/es-es/aspnet/core/mvc/models/validation?view=aspnetcore-3.1](https://docs.microsoft.com/es-es/aspnet/core/mvc/models/validation?view=aspnetcore-3.1)
+- [https://enterprisecraftsmanship.com/posts/validation-and-ddd/](https://enterprisecraftsmanship.com/posts/validation-and-ddd/)
+- [https://enterprisecraftsmanship.com/posts/functional-c-primitive-obsession/](https://enterprisecraftsmanship.com/posts/functional-c-primitive-obsession/)
+- [https://www.pluralsight.com/courses/refactoring-anemic-domain-model](
 https://www.pluralsight.com/courses/refactoring-anemic-domain-model)
 
 ## Código de ejemplo
