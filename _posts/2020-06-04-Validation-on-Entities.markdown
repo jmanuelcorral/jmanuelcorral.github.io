@@ -16,18 +16,41 @@ Una de las cosas que más me encuentro a la hora de enfocar un proyecto dentro d
 
 En mi caso, estructuro 2 tipos de validación:
 
-- Validación de una Boundary (es la validación en la que necesitamos ir a base de datos a consultar, etc).
+- Validación con elementos externos (es la validación en la que necesitamos ir a base de datos a consultar algo, etc).
 - Validación de Negocio.
 
 En este post me centraré en la **validación de negocio**.
 
-A dia de hoy en un proyecto que se que va a crecer (en el que entonces apuesto por DDD), no creo ni en DataAnnotations, ni en FluentValidations, ni en nada por el estilo. Creo que tienen su popularidad, pero contribuyen a crear un sistema anémico en vez de rico.
+A dia de hoy si sé que un proyecto va a crecer apuesto por DDD. Si alguna vez has jugado DDD, normalmente hay más codigo, más capas, más arquitectura... pero luego el mantenimiento y la extensibilidad a medio-largo plazo es muy agradecido.
 
-Muchos developers dicen que es bueno tener lógica de validación en  DataAnnotations, por que es el punto de entrada a tu sistema, otros, algo más puristas, dirán que estas añadiendo responsabilidades al Dto que las utiliza y que "Rompe" SOLID. 
+Cuando se trata de validaciones en un proyecto en el que hago DDD no me parece buena aproximación usar ni DataAnnotations, ni  FluentValidations, ni nada por el estilo. Creo que tienen su popularidad en el mundo del desarrollo .net, pero contribuyen a crear modelos anémicos en vez de un modelo DDD rico.
 
-Reconozco que yo en mi juventud también pasé por esas fases 😎.
+### ¿DataAnnotations o FluentValidation?
 
-Soluciones a ese problema hay muchas, una de ellas es utilizar FluentValidation, un framework que nos permite separar la logica de validación del DTO, pero al final sigues teniendo el problema de que en tu negocio tendrás que volver a pasar esas validaciones en determinados casos en diferentes puntos, y no solo por ejemplo en un controller, por lo que tendrás la misma validación en diferentes sitios.
+Muchos developers dicen que esyá bien tener lógica de validación en  DataAnnotations, por que es el punto de entrada a tu sistema, otros, algo más puristas, dirán que estas añadiendo responsabilidades al Dto que las utiliza y que "Rompe" SOLID.
+
+Reconozco que yo en mi juventud también pasé por esas fases 😎. Pero a día de hoy me siento super orgulloso contandote que ahora mismo no utilizo ninguna de ellas.
+
+Para mí cualquier solución que implique tener una validación en una Capa, ya sea en un Endpoint o en un servicio, hará que tarde o temprano necesite validar en varios puntos validaciones muy parecidas (a veces incluso la misma). Con esto quiero decir que tendré que validar lo mismo en dos sitios. Esto desde el punto de vista de la "mantenibilidad" es un problema, si tengo validaciones en dos sitios, alguien de mi equipo que tenga poco contexto de una pieza de codigo puede por ejemplo arreglar un bug de validación solo en una capa por ejemplo.
+
+### Avanzando con validaciones en Servicios
+
+Otra opción que a lo largo de los años he visto, es en equipos que estan arrancando con DDD, es que meten toda la logica de validación en servicios. Por ejemplo:
+
+```csharp
+public class BankService
+...
+public bool IsValidBank(Bank bank) 
+{
+    if (bank.Id == guid.Empty) return false;
+    if (string.IsNullOrWhiteSpace(bank.Name)) return false;
+    if !((bank.Bic.Length >=8 && bank.Bic.Length <=11)) return false;
+}
+```
+
+En este caso, podrás refactorizar el codigo para que sea mucho más legible, es más podrías devolver en vez de un booleana un objeto con el resultado de la validación, podrías utilizar FluentValidation y montar un contexto de validación, etc. El problema es que ya has representado un banco en una entidad (está instanciado en memoria con tu objeto Bank) y no tiene por que ser valido.
+
+El problema además, es que para construir un Banco siempre voy a necesitar ese servicio, y eso es algo que con el paso del tiempo podría evolucionar a que no todo mi equipo va a pasar por ahí.
 
 ## Entities Válidas
 
