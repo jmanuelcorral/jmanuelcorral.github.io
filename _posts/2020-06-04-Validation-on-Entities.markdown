@@ -100,7 +100,7 @@ public class Bank
 }
 ```
 
-Si te fijas, de esta forma, tu objeto **Muta** cada vez que hacemos un Set válido, pero si el set es Inválido, tendremos un mensaje de error, y el objeto no habrá mutado. El Objeto result te da un contrato muy util, si su propiedad Success es true, puedes obtener tu objeto **Mutado** al nuevo estado en la propiedad Value. Si no Tendrás el Mensaje de error en la propiedad Error. ¿Fácil no? 
+Si te fijas, de esta forma, tu objeto **Muta** cada vez que hacemos un *Set* válido, pero si el *Set* es Inválido, tendremos un mensaje de error, y el objeto no habrá mutado. El Objeto result te da un contrato muy util, si su propiedad Success es true, puedes obtener tu objeto **Mutado** al nuevo estado en la propiedad Value. Si no Tendrás el Mensaje de error en la propiedad Error. ¿Fácil no? 
 
 Lo interesante viene ahora. Siguiendo el ejemplo para nuestro negocio un BIC, es un codigo bancario,que puede tener entre 8 y 11 dígitos (los 3 últimos son opcionales):
 
@@ -199,7 +199,7 @@ public Result<Bank> SetBIC(string value)
 }
 ```
 
-Si nos fijamos, una máxima que hemos de seguir y que aún no hemos aplicado en nuestra entity, es que si quiero crear algo en nuestro dominio, no podemos recurrir a un constructor, ya que los constructores aunque son parametrizables, no devuelven estado de lo que se crea. Es por eso que no nos sirven en este caso para construir Objetos con Validación. 
+Si nos fijamos, una máxima que hemos de seguir y que aún no hemos aplicado en nuestra entity, es que si quiero crear algo en nuestro dominio, no podemos recurrir a un constructor, ya que los constructores aunque son parametrizables, no devuelven estado de lo que se crea. Es por eso que no nos sirven en este caso para construir Objetos con Validación.
 
 Lo que debemos hacer, es recurrir a una función estática que nos permita construir nuestro objeto de negocio si y solo si es válido, y para que nadie pueda crear instancias de nuestro objeto si no es desde este método, deberemos de hacer que el constructor por defecto sea privado.
 
