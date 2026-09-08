@@ -1,8 +1,10 @@
 ---
 // CV section — ported verbatim from `newdesign/index.html` (#cv:
-// `.cv-wrap`, `.cv-online`, `.cv-links`, `.dl`). Link targets point to the
-// static passthrough files copied into `public/` (see final report for the
-// scope decision on cv.html/resume-*.html/PDFs).
+// `.cv-wrap`, `.cv-online`, `.cv-links`, `.dl`). PRIVACY OVERRIDE: the two
+// `.dl` rows previously downloaded CV PDFs directly; those PDFs have been
+// deleted from `public/`/`newdesign/` for privacy reasons and both rows now
+// link to the sanitized HTML résumé pages instead (same row/icon layout,
+// non-download wording, no `download` attribute).
 import type { Locale } from '../lib/i18n';
 import { HOME_COPY } from '../lib/homeCopy';
 
@@ -33,23 +35,23 @@ const copy = HOME_COPY[locale];
     </div>
 
     <div class="cv-links">
-      <a class="dl" href="/mtsfs81s-Jose_Corral_CV_SHORT_2026.pdf" download>
+      <a class="dl" href="/resume-short.html">
         <span class="ic"
           ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"
             ><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"></path></svg
           ></span
         >
         <span class="txt"><b>{copy.cv.dlShortT}</b><span>{copy.cv.dlShortS}</span></span>
-        <span class="arr">↓</span>
+        <span class="arr">→</span>
       </a>
-      <a class="dl" href="/mtsfs824-Jose_Corral_CV_Extended_2026.pdf" download>
+      <a class="dl" href="/resume-extended.html">
         <span class="ic"
           ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"
             ><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"></path></svg
           ></span
         >
         <span class="txt"><b>{copy.cv.dlExtT}</b><span>{copy.cv.dlExtS}</span></span>
-        <span class="arr">↓</span>
+        <span class="arr">→</span>
       </a>
       <a class="dl" href="/cv.html">
         <span class="ic"
