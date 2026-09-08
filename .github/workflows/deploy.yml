@@ -1,0 +1,54 @@
+name: Deploy Astro site to GitHub Pages
+
+# Coexistence note: Astro now lives at the repository root (post-cutover from
+# legacy Jekyll). This workflow is scoped to pushes on `master` touching the
+# Astro source/config/content/public files or itself. Cutting the live
+# GitHub Pages source over to "GitHub Actions" (Settings → Pages → Source)
+# is a deliberate, separate step for the repo owner — this workflow only
+# prepares that path, it does not flip the switch.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'astro.config.mjs'
+      - 'tsconfig.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+# Allow this job to clone the repo and create a Pages deployment.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Avoid overlapping Pages deployments.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v7
+      - name: Install, build, and upload your site
+        uses: withastro/action@v6
+        # with:
+        #   node-version: 24 # Defaults to 24; bump here if Astro requires newer.
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

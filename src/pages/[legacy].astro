@@ -1,0 +1,75 @@
+---
+// Static legacy-redirect stub (Rusty-owned). GitHub Pages has no server-side
+// redirect mechanism, so each legacy Jekyll URL below is prerendered as its
+// own tiny HTML page that immediately forwards the browser (and search
+// engines, via <link rel="canonical">) to the corrected Spanish post.
+//
+// This intentionally does NOT use Basher's BaseLayout/PostLayout — it is a
+// throwaway one-off document, not a real page in the site's content model.
+import { getCollection } from 'astro:content';
+import { legacyRedirects } from '../data/legacyRedirects';
+import { blogPostPath } from '../lib/i18n';
+
+export function getStaticPaths() {
+  return legacyRedirects.map((redirect) => ({
+    // Astro route params can't contain "/", so strip the leading slash here
+    // and re-add it below when matching against `legacyPath` frontmatter.
+    params: { legacy: redirect.legacyPath.replace(/^\//, '') },
+    props: { expectedTranslationKey: redirect.expectedTranslationKey },
+  }));
+}
+
+interface Props {
+  expectedTranslationKey: string;
+}
+
+const { expectedTranslationKey } = Astro.props as Props;
+const legacyPath = `/${Astro.params.legacy}`;
+
+const esPosts = await getCollection('blog', (entry) => entry.data.lang === 'es');
+
+// 1) Authoritative: a post whose frontmatter records this exact legacy URL.
+const byLegacyPath = esPosts.find((post) => post.data.legacyPath === legacyPath);
+// 2) Fallback: the post expected to carry this key, in case `legacyPath`
+//    hasn't been set on it yet.
+const byExpectedKey = esPosts.find(
+  (post) => post.data.translationKey === expectedTranslationKey,
+);
+const target = byLegacyPath ?? byExpectedKey;
+
+const destination = target ? blogPostPath('es', target.data.slug) : '/es/';
+
+if (!target) {
+  // Visible in CI/build logs so the gap doesn't go unnoticed silently.
+  console.warn(
+    `[legacy-redirect] No Spanish post resolves "${legacyPath}" yet ` +
+      `(expected translationKey "${expectedTranslationKey}"). ` +
+      'Falling back to "/es/". Update src/data/legacyRedirects.ts or set ' +
+      'legacyPath in the post frontmatter once it is migrated.',
+  );
+}
+
+const siteOrigin = Astro.site ?? new URL('https://jmanuelcorral.github.io');
+const destinationUrl = new URL(destination, siteOrigin).toString();
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirigiendo… / Redirecting…</title>
+    <meta http-equiv="refresh" content={`0;url=${destination}`} />
+    <link rel="canonical" href={destinationUrl} />
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <p>
+      Esta página se ha movido. Si no te redirige automáticamente,
+      <a href={destination}>haz clic aquí</a>.
+    </p>
+    <p>
+      This page has moved. If you are not redirected automatically,
+      <a href={destination}>click here</a>.
+    </p>
+  </body>
+</html>

@@ -1,0 +1,77 @@
+---
+// Custom 404. Locale is unknown at this point (the URL didn't match a known
+// route), so this page is intentionally bilingual rather than picking one
+// language. No 404 screen exists in the export, so this is an
+// *extrapolation*: built from patterns already established elsewhere in the
+// design (ambient background, `.eyebrow`, hero-scale heading, `.btn-primary`
+// / `.btn-ghost` links) rather than inventing new visual language.
+// Disclosed in the final report as a non-reference surface.
+import '../styles/global.css';
+import AmbientBackground from '../components/AmbientBackground.astro';
+import { t } from '../lib/i18n';
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 · jmanuelcorral</title>
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <AmbientBackground />
+    <main id="main-content" class="not-found" tabindex="-1">
+      <div class="eyebrow">404</div>
+      <h1>
+        <span lang="es">{t('es', 'notFoundTitle')}</span> <span aria-hidden="true">/</span>
+        <span lang="en">{t('en', 'notFoundTitle')}</span>
+      </h1>
+      <p lang="es">{t('es', 'notFoundBody')}</p>
+      <p lang="en">{t('en', 'notFoundBody')}</p>
+      <p class="not-found__links">
+        <a class="btn btn-primary" href="/es/" lang="es">{t('es', 'notFoundLink')}</a>
+        <a class="btn btn-ghost" href="/en/" lang="en">{t('en', 'notFoundLink')}</a>
+      </p>
+    </main>
+  </body>
+</html>
+
+<style>
+  .not-found {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 120px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .not-found .eyebrow {
+    justify-content: center;
+    font-size: 13px;
+  }
+
+  .not-found h1 {
+    font-size: clamp(24px, 3.6vw, 34px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--fg);
+    margin-bottom: 16px;
+  }
+
+  .not-found p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .not-found__links {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 28px;
+  }
+</style>

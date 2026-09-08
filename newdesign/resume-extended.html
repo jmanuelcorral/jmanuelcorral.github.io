@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>José Manuel Corral Céspedes — Resume (Extended)</title>
+<style>
+  :root{
+    --ink:#15181d;
+    --fg:#23272f;
+    --muted:#5b636e;
+    --faint:#8a919b;
+    --line:#e2e5ea;
+    --paper:#ffffff;
+    --accent:#0f6d63;
+    --accent-soft:#eaf4f2;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    --font-mono:"SF Mono","JetBrains Mono","IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:#54585f;color:var(--fg);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+  .page{
+    width:210mm;margin:24px auto;padding:15mm 16mm 14mm;
+    background:var(--paper);box-shadow:0 12px 40px rgba(0,0,0,.35);position:relative;
+  }
+
+  header{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:20px;}
+  .name{font-size:32px;font-weight:800;letter-spacing:-.02em;color:var(--ink);line-height:1.02;}
+  .role{font-size:12.5px;font-weight:600;color:var(--accent);margin-top:6px;}
+  .contact{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:9px;display:flex;flex-wrap:wrap;gap:6px 14px;}
+  .contact a{color:var(--muted);text-decoration:none;}
+
+  .sec-title{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);padding-bottom:5px;margin:22px 0 12px;position:relative;break-after:avoid;}
+  .sec-title:first-of-type{margin-top:0;}
+  .sec-title::before{content:"";position:absolute;left:0;bottom:-1px;width:32px;height:2px;background:var(--accent);}
+  .sec-title::after{content:"";position:absolute;left:32px;right:0;bottom:0;height:1px;background:var(--line);}
+
+  .summary{font-size:11px;line-height:1.6;color:var(--fg);}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{font-size:10px;font-weight:600;color:var(--ink);background:var(--accent-soft);border:1px solid #d5e7e4;border-radius:5px;padding:4px 9px;}
+
+  .job{margin-bottom:16px;}
+  .job-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;break-after:avoid;}
+  .job-title{font-size:13px;font-weight:700;color:var(--ink);}
+  .job-date{font-family:var(--font-mono);font-size:9.5px;color:var(--faint);white-space:nowrap;}
+  .job-org{font-size:10.5px;color:var(--accent);font-weight:600;margin-top:1px;margin-bottom:6px;}
+  .job-lead{font-size:10.5px;color:var(--muted);line-height:1.5;margin-bottom:6px;}
+
+  .proj{margin:8px 0 8px;break-inside:avoid;}
+  .proj-title{font-size:11px;font-weight:700;color:var(--ink);margin-bottom:3px;}
+  .proj-lead{font-size:10px;color:var(--muted);line-height:1.45;margin-bottom:4px;}
+
+  ul.bullets{list-style:none;}
+  ul.bullets li{font-size:10.5px;line-height:1.5;color:var(--fg);padding-left:13px;position:relative;margin-bottom:3px;}
+  ul.bullets li::before{content:"";position:absolute;left:0;top:7px;width:4px;height:4px;border-radius:50%;background:var(--accent);}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px 26px;}
+  .cert-item{font-size:10.5px;color:var(--fg);display:flex;justify-content:space-between;gap:10px;padding:2px 0;border-bottom:1px solid var(--line);}
+  .cert-item .y{font-family:var(--font-mono);font-size:9px;color:var(--faint);}
+  .edu-item{margin-bottom:8px;}
+  .edu-item .t{font-size:11px;font-weight:700;color:var(--ink);}
+  .edu-item .s{font-size:10px;color:var(--muted);margin-top:1px;}
+  .os a{font-size:10.5px;color:var(--fg);text-decoration:none;display:block;padding:2px 0;}
+  .os a b{color:var(--ink);}
+  .os a .u{font-family:var(--font-mono);font-size:9px;color:var(--faint);}
+  .earlier li{font-size:10.5px;color:var(--fg);padding-left:13px;position:relative;margin-bottom:2px;list-style:none;}
+  .earlier li::before{content:"";position:absolute;left:0;top:7px;width:4px;height:4px;border-radius:50%;background:var(--faint);}
+
+  @media print{
+    @page{size:A4;margin:14mm 15mm;}
+    html,body{background:#fff;}
+    .page{margin:0;box-shadow:none;width:auto;padding:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header>
+    <div class="name">José Manuel Corral Céspedes</div>
+    <div class="role">Cloud Solution Architect · Azure · AI · Cloud Native · Platform Engineering</div>
+    <div class="contact">
+      <span>Barcelona, Spain</span>
+      <span>contact via GitHub</span>
+      <span>linkedin.com/in/jmanuelcorral</span>
+      <span>jmanuelcorral.github.io</span>
+    </div>
+  </header>
+
+  <div class="sec-title">Professional Summary</div>
+  <p class="summary">Cloud Solution Architect with 19+ years of experience in enterprise software engineering, application modernization, cloud-native architecture, DevOps, platform engineering, and Artificial Intelligence. Trusted advisor to enterprise customers, translating business priorities into secure, scalable, and actionable Azure adoption strategies. Combines strategic advisory with hands-on expertise across Azure Kubernetes Service, GitHub, Azure AI Foundry, Azure OpenAI, agentic architectures, Retrieval-Augmented Generation, MLOps, and modern application platforms. Experienced leading architecture reviews, technical roadmaps, executive discussions, and complex escalations across customer, engineering, product, support, and account teams.</p>
+
+  <div class="sec-title">Core Expertise</div>
+  <div class="chips">
+    <span class="chip">Cloud Architecture &amp; Azure</span>
+    <span class="chip">Application Modernization</span>
+    <span class="chip">AKS &amp; Cloud Native</span>
+    <span class="chip">Platform Engineering</span>
+    <span class="chip">DevOps &amp; GitHub Enterprise</span>
+    <span class="chip">Azure AI Foundry &amp; OpenAI</span>
+    <span class="chip">Agentic AI, RAG &amp; MLOps</span>
+    <span class="chip">Security, Governance &amp; FinOps</span>
+  </div>
+
+  <div class="sec-title">Professional Experience</div>
+
+  <div class="job">
+    <div class="job-head"><span class="job-title">Cloud Solution Architect (CSA) — Azure, AI &amp; Cloud Native</span><span class="job-date">Jan 2026 – Present</span></div>
+    <div class="job-org">Microsoft</div>
+    <p class="job-lead">Strategic and technical advisor for Spanish enterprise customers, connecting business priorities with Azure adoption, modernization, AI, DevOps, and platform engineering initiatives.</p>
+
+    <div class="proj">
+      <div class="proj-title">Advisory &amp; Customer Engagement</div>
+      <ul class="bullets">
+        <li>Build trusted relationships with customer architects, engineering leaders, platform teams, security stakeholders, and account teams to shape technical direction.</li>
+        <li>Translate complex platform capabilities and trade-offs into clear recommendations, reference architectures, implementation plans, and executive-level messaging.</li>
+        <li>Coordinate architecture reviews and technical escalations with Microsoft product, engineering, support, and specialist teams.</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="proj-title">Cloud-Native Platforms &amp; Kubernetes Advisory</div>
+      <ul class="bullets">
+        <li>Design and review AKS architectures covering cluster topology, node pools, autoscaling, networking, identity, security, observability, and upgrade strategies.</li>
+        <li>Guide on Azure Container Registry security, image distribution, private connectivity, and integration with AKS and delivery pipelines.</li>
+        <li>Clarify architectural differences between Azure Functions, App Service, and Kubernetes-based workloads to support service-selection decisions.</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="proj-title">Enterprise AI &amp; Azure AI Foundry Advisory</div>
+      <ul class="bullets">
+        <li>Define project, subscription, environment, governance, and deployment models for enterprise AI adoption.</li>
+        <li>Advise on RAG, knowledge grounding, agent orchestration, model lifecycle, capacity planning, security, responsible AI, and cost optimization.</li>
+        <li>Lead roadmap discussions relating new Foundry capabilities to existing Azure AI services; support escalations on model deployments and production-readiness.</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="proj-title">GitHub, DevOps &amp; Platform Engineering</div>
+      <ul class="bullets">
+        <li>Advise on GitHub Enterprise governance, CI/CD, GitHub Actions, self-hosted and Kubernetes-based runners, identity, and organization design.</li>
+        <li>Align developer platforms, cloud governance, automation, and software supply-chain controls with the customer operating model.</li>
+        <li>Facilitate workshops on platform engineering, developer experience, reusable automation, and secure delivery.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="job">
+    <div class="job-head"><span class="job-title">Senior AI &amp; Apps Development Consultant</span><span class="job-date">Aug 2023 – Jan 2026</span></div>
+    <div class="job-org">Microsoft</div>
+
+    <div class="proj">
+      <div class="proj-title">IoT Edge &amp; ML Theft Detection Platform — Retail</div>
+      <p class="proj-lead">Hybrid cloud-edge solution for theft detection in fashion retail, combining RFID, edge processing, cloud services, and Machine Learning.</p>
+      <ul class="bullets">
+        <li>Designed the architecture using IoT Edge, K3s, Java, cloud/edge infrastructure, RFID, and an integrated ML model.</li>
+        <li>Enabled store-level autonomy through local processing while retaining centralized management, scalability, and observability.</li>
+        <li>Implemented MLOps workflows automating model training, validation, deployment, and lifecycle across environments.</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="proj-title">Agile Stock &amp; Store Visit Management — Retail</div>
+      <p class="proj-lead">IoT-driven platform improving stock management and store visit planning across distributed retail environments.</p>
+      <ul class="bullets">
+        <li>Combined IoT Edge, K3s, cloud-edge integration, Machine Learning, and MLOps to support operational decisions.</li>
+        <li>Designed ML pipelines to optimize stock distribution and enable centralized insights across multiple stores.</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="proj-title">Enterprise Multi-Agent Customer Service Platform</div>
+      <p class="proj-lead">AI-powered agentic platform accelerating issue resolution across enterprise ticketing ecosystems.</p>
+      <ul class="bullets">
+        <li>Implemented specialized agent orchestration using Python, Astral, Semantic Kernel, Cognee, and custom integrations.</li>
+        <li>Integrated ServiceNow, Jira, GitHub Issues, and organizational documentation to produce contextual responses.</li>
+        <li>Designed workflows for ticket understanding, knowledge retrieval, response generation, and coordinated resolution.</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="proj-title">AI Knowledge Management &amp; RAG Solutions</div>
+      <p class="proj-lead">Internal and customer-facing solutions providing conversational access to organizational and enterprise knowledge.</p>
+      <ul class="bullets">
+        <li>Built an internal knowledge management tool using Python, AutoGen, and Retrieval-Augmented Generation.</li>
+        <li>Created a document-intelligence MVP for a logistics customer, integrated across multiple bounded contexts, and evolved it toward production.</li>
+        <li>Reduced friction in onboarding, documentation discovery, and access to information across large document sets.</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="proj-title">Cloud-Native Logistics Platform &amp; OSS Contributions</div>
+      <ul class="bullets">
+        <li>Provided architectural and operational leadership for a large cloud-native transformation around vertical product teams; contributed to its Architecture Review Board.</li>
+        <li>Contributed to CCOInsights (cloud cost &amp; security dashboard), a documentation-based GitHub issue assistant, and an internal Industry Solutions portfolio catalog.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="job">
+    <div class="job-head"><span class="job-title">Application Development Consultant</span><span class="job-date">Jun 2021 – Aug 2023</span></div>
+    <div class="job-org">Microsoft</div>
+
+    <div class="proj">
+      <div class="proj-title">DevOps Culture Transformation — Retail Logistics</div>
+      <ul class="bullets">
+        <li>Migrated on-premises lifecycle tooling toward cloud-based solutions.</li>
+        <li>Introduced automation and DevOps practices that reduced release cycle time from 24–48 hours to 42 minutes.</li>
+        <li>Supported organizational, cultural, process, and tooling changes to sustain faster, more reliable delivery.</li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <div class="proj-title">Cloud-Native Architecture Transformation — Logistics</div>
+      <ul class="bullets">
+        <li>Defined an architecture blueprint covering service patterns, communication, persistence, bounded contexts, and platform integration.</li>
+        <li>Collaborated on coexistence and migration strategies between legacy and modernized capabilities.</li>
+        <li>Provided continuous coaching on cloud-native tech, agile engineering, architecture, and vertical product development.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="job">
+    <div class="job-head"><span class="job-title">Software Development Engineer</span><span class="job-date">Mar 2019 – Jun 2021</span></div>
+    <div class="job-org">Plain Concepts</div>
+    <ul class="bullets">
+      <li>Delivered vertical user stories within large software programs involving multiple product and engineering teams.</li>
+      <li>Built a cloud-based ERP using .NET Core, Node.js, Domain-Driven Design, Entity Framework, React, SurveyJS, and Monaco.</li>
+      <li>Onboarded teams and delivered training on CI/CD, source control, Docker, OAuth, OpenID Connect, Kubernetes, Agile, and design patterns.</li>
+      <li>Contributed to Microsoft OSS: eShopOnContainers, eShopOnContainersAI, SmartHotel360.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head"><span class="job-title">Cloud &amp; Development Technical Lead</span><span class="job-date">Oct 2016 – Feb 2019</span></div>
+    <div class="job-org">Tokiota</div>
+    <ul class="bullets">
+      <li>Led PoCs, customer workshops, presales solution design, requirements discovery, and technical proposals.</li>
+      <li>Provided architectural guidance and participated in early-stage design, product-quality reviews, roadmaps, and delivery planning.</li>
+      <li>Worked primarily with Azure, ASP.NET Core, Docker, SQL Server, JavaScript, TypeScript, and Vue.js.</li>
+    </ul>
+  </div>
+
+  <div class="job">
+    <div class="job-head"><span class="job-title">.NET Senior Consultant &amp; Trainer</span><span class="job-date">Nov 2009 – Oct 2016</span></div>
+    <div class="job-org">Capgemini (Altran)</div>
+    <ul class="bullets">
+      <li>Developed and maintained online banking and mobile API solutions for financial-services and insurance customers.</li>
+      <li>Served as Microsoft Official Trainer responsible for the company .NET development curriculum.</li>
+      <li>Founded and contributed to the Altran .NET Excellence Center, supporting technical enablement and engineering quality.</li>
+    </ul>
+  </div>
+
+  <div class="sec-title">Earlier Experience</div>
+  <ul class="earlier">
+    <li>Senior Software Developer — TcMan · Jun 2009 – Oct 2009</li>
+    <li>Consultant — FHIOS (Conzentra) · Jan 2008 – Jun 2009</li>
+    <li>Software Developer — Wolters Kluwer (A3 Software) · Oct 2007 – Jan 2008</li>
+  </ul>
+
+  <div class="sec-title">Selected Certifications</div>
+  <div class="two-col">
+    <div class="cert-item"><span>GitHub Foundations</span><span class="y">2024</span></div>
+    <div class="cert-item"><span>Azure AI Fundamentals</span><span class="y">2024</span></div>
+    <div class="cert-item"><span>DevOps Solutions Expert (AZ-400)</span><span class="y">2023</span></div>
+    <div class="cert-item"><span>Azure Cosmos DB Developer Specialty</span><span class="y">2023</span></div>
+    <div class="cert-item"><span>Azure Developer Associate</span><span class="y">2022</span></div>
+    <div class="cert-item"><span>Certified ScrumMaster (Agile Alliance)</span><span class="y">2013</span></div>
+    <div class="cert-item"><span>Microsoft Certified Trainer</span><span class="y">2013–2017</span></div>
+  </div>
+
+  <div class="sec-title">Education</div>
+  <div class="edu-item"><div class="t">Computer Science Studies</div><div class="s">Ramon Llull University, Barcelona</div></div>
+  <div class="edu-item"><div class="t">Vocational Education in IT Management</div><div class="s">Escola Xaloc · 2002–2004</div></div>
+
+  <div class="sec-title">Open Source &amp; Community</div>
+  <div class="os">
+    <a href="https://aka.ms/ccoinsights"><b>CCOInsights</b> — Maintainer &amp; contributor · <span class="u">aka.ms/ccoinsights</span></a>
+    <a href="https://github.com/jmanuelcorral/dockerwaiter"><b>Dockerwaiter</b> — Side project &amp; tooling · <span class="u">github.com/jmanuelcorral/dockerwaiter</span></a>
+    <a href="https://github.com/jmanuelcorral/Sushi"><b>Sushi</b> — Open-source library · <span class="u">github.com/jmanuelcorral/Sushi</span></a>
+    <a href="https://github.com/jmanuelcorral/Orchestra"><b>Orchestra</b> — Open-source framework · <span class="u">github.com/jmanuelcorral/Orchestra</span></a>
+    <a href="https://jmanuelcorral.github.io"><b>Talks, training &amp; blog</b> · <span class="u">jmanuelcorral.github.io</span></a>
+  </div>
+</div>
+
+</body>
+</html>

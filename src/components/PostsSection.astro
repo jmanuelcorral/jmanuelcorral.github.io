@@ -1,0 +1,138 @@
+---
+// Posts section — ported visual pattern from `newdesign/index.html`
+// (#posts: `.filters`, `.fbtn`, `.grid.g-3`, `.post`) exactly, including the
+// literal "All / Cloud / DevOps" filter taxonomy and the "All my posts →"
+// CTA. The only data adaptation is that cards render the real content
+// collection instead of the export's 5 hardcoded links to the legacy
+// external site — each real post is mapped to the design's own kind label
+// and filter category via the deterministic, disclosed table in
+// `postTaxonomy.ts` (the real posts are, by `legacyPath`, the very same
+// five posts the design illustrates).
+import type { Locale } from '../lib/i18n';
+import { HOME_COPY } from '../lib/homeCopy';
+import { getPostsByLocale, formatShortDate } from '../lib/content';
+import { blogPostPath, t } from '../lib/i18n';
+import { taxonomyFor } from '../lib/postTaxonomy';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const copy = HOME_COPY[locale];
+const posts = await getPostsByLocale(locale);
+---
+
+<section id="posts" class="sec-pad">
+  <div class="sec-head">
+    <div>
+      <div class="eyebrow ey-indigo">{copy.posts.eyebrow}</div>
+      <div class="sec-title">{copy.posts.title}</div>
+      <p class="sec-sub">{copy.posts.sub}</p>
+    </div>
+    {
+      posts.length > 0 && (
+        <div class="posts-actions">
+          <div class="filters" id="post-filters">
+            <button class="fbtn on" data-f="all">
+              {copy.posts.fAll}
+            </button>
+            <button class="fbtn" data-f="cloud">
+              Cloud
+            </button>
+            <button class="fbtn" data-f="devops">
+              DevOps
+            </button>
+          </div>
+          <a class="btn btn-ghost" href="#posts">
+            {copy.posts.all}
+          </a>
+        </div>
+      )
+    }
+  </div>
+
+  {
+    posts.length === 0 ? (
+      <p class="sec-sub">{t(locale, 'noPosts')}</p>
+    ) : (
+      <div class="grid g-3" id="post-grid">
+        {posts.map((post) => {
+          const taxonomy = taxonomyFor(post.data.translationKey);
+          return (
+            <a class="post" href={blogPostPath(locale, post.data.slug)} data-cat={taxonomy.cat}>
+              <div class="kind">{taxonomy.kind[locale]}</div>
+              <h4>{post.data.title}</h4>
+              <p>{post.data.description}</p>
+              <div class="date">{formatShortDate(post.data.pubDate, locale)}</div>
+            </a>
+          );
+        })}
+      </div>
+    )
+  }
+</section>
+
+<script>
+  // Post filters — ported verbatim from newdesign/index.html. Filters on
+  // the same fixed cloud/devops taxonomy as the design, now driven by real
+  // posts mapped to that taxonomy in postTaxonomy.ts.
+  (function () {
+    var wrap = document.getElementById('post-filters');
+    var grid = document.getElementById('post-grid');
+    if (!wrap || !grid) return;
+    var filterWrap = wrap;
+    var postGrid = grid;
+    filterWrap.addEventListener('click', function (e) {
+      var target = e.target;
+      var b = target instanceof Element ? target.closest('.fbtn') : null;
+      if (!(b instanceof HTMLElement)) return;
+      filterWrap.querySelectorAll('.fbtn').forEach(function (x) {
+        x.classList.remove('on');
+      });
+      b.classList.add('on');
+      var f = b.dataset.f;
+      postGrid.querySelectorAll('.post').forEach(function (p) {
+        if (p instanceof HTMLElement) {
+          p.classList.toggle('hidden', f !== 'all' && p.dataset.cat !== f);
+        }
+      });
+    });
+  })();
+</script>
+
+<style>
+  .filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .fbtn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .fbtn:hover {
+    border-color: var(--line-2);
+    color: var(--fg);
+  }
+  .fbtn.on {
+    background: var(--accent-soft);
+    border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+    color: var(--accent);
+  }
+  .posts-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  #posts :global(.post .kind) {
+    color: var(--indigo);
+  }
+</style>

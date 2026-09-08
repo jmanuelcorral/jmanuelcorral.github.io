@@ -1,0 +1,377 @@
+---
+// Interactive CLI simulator — ported verbatim from `newdesign/index.html`
+// (`.term`, `.term-bar`, `.term-body`, `.cli-*` and the full `<script>`
+// menu/parser/easter-egg logic). Locale strings are baked in at build time
+// (no client-side lang toggle) since each Astro route is a real per-locale
+// page rather than one document swapping text client-side.
+import type { Locale } from '../lib/i18n';
+import { HOME_COPY } from '../lib/homeCopy';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const cli = HOME_COPY[locale].cli;
+const T = {
+  boot: cli.boot,
+  hi: cli.hi,
+  o1: cli.o1,
+  o2: cli.o2,
+  o3: cli.o3,
+  o4: cli.o4,
+  hint: cli.hint,
+  go: cli.go,
+  games: cli.games,
+  g1: cli.g1,
+  g2: cli.g2,
+  gback: cli.gback,
+  playing: cli.playing,
+  back: cli.back,
+  unknown: cli.unknown,
+  tryHelp: cli.tryHelp,
+  helpTitle: cli.helpTitle,
+  cleared: cli.cleared,
+};
+const NAV: Record<string, string> = { '1': '#portfolio', '2': '#cv', '3': '#posts', '4': '#labs' };
+const GAMES: Record<string, { n: string; url: string }> = {
+  '1': { n: T.g1, url: 'https://jmanuelcorral.github.io/barrelshift/' },
+  '2': { n: T.g2, url: 'https://jmanuelcorral.github.io/pinball/' },
+};
+---
+
+<div class="term" id="cli" role="region" aria-label="jmanuelcorralOS">
+  <div class="term-bar"><i></i><i></i><i></i><span class="path">jmanuelcorralOS — ~/jmanuelcorral</span></div>
+  <div class="term-body" id="cli-body">
+    <div id="cli-out" class="cli-out" aria-live="polite"></div>
+    <div class="cli-line">
+      <span class="cli-ps">$</span>
+      <input
+        id="cli-input"
+        class="cli-input"
+        type="text"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        aria-label="terminal input"
+      />
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ T, NAV, GAMES }} is:inline>
+  (function () {
+    var out = document.getElementById('cli-out');
+    var input = document.getElementById('cli-input');
+    var body = document.getElementById('cli-body');
+    if (!out || !input) return;
+    var t = function (k) {
+      return T[k] != null ? T[k] : k;
+    };
+    var mode = 'main'; // 'main' | 'games'
+
+    function row(html, cls) {
+      var d = document.createElement('div');
+      d.className = 'row' + (cls ? ' ' + cls : '');
+      d.innerHTML = html;
+      out.appendChild(d);
+    }
+    function esc(s) {
+      return String(s).replace(/[&<>]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
+      });
+    }
+    function scroll() {
+      out.scrollTop = out.scrollHeight;
+    }
+
+    function opt(num, label, cls) {
+      return (
+        '<span class="opt' +
+        (cls ? ' ' + cls : '') +
+        '" role="button" tabindex="0" data-key="' +
+        num +
+        '"><span class="num">' +
+        num +
+        '</span>  ' +
+        esc(label) +
+        '</span>'
+      );
+    }
+    function renderMain() {
+      out.innerHTML = '';
+      mode = 'main';
+      row('<span class="p">' + esc(t('boot')) + '</span>', 'dim');
+      row(esc(t('hi')));
+      row(opt('1', t('o1')));
+      row(opt('2', t('o2')));
+      row(opt('3', t('o3')));
+      row(opt('4', t('o4')));
+      row('<span class="p">' + esc(t('hint')) + '</span>', 'dim');
+      scroll();
+    }
+    function renderGames() {
+      mode = 'games';
+      row('<span class="games-title">' + esc(t('games')) + '</span>');
+      row(opt('1', t('g1'), 'egg'));
+      row(opt('2', t('g2'), 'egg'));
+      row(opt('0', t('gback')));
+      scroll();
+    }
+
+    function nav(hash) {
+      var el = document.querySelector(hash);
+      if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 70, behavior: 'smooth' });
+    }
+
+    function exec(raw) {
+      var cmd = raw.trim().toLowerCase();
+      if (cmd !== '') row('<span class="cli-ps">$</span> ' + esc(raw), 'echo');
+      if (cmd === '') {
+        scroll();
+        return;
+      }
+
+      if (cmd === 'clear' || cmd === 'cls') {
+        out.innerHTML = '';
+        row(esc(t('cleared')), 'dim');
+        scroll();
+        return;
+      }
+      if (cmd === 'help' || cmd === '?') {
+        row('<span class="c">' + esc(t('helpTitle')) + '</span>');
+        if (mode === 'games') {
+          row(opt('1', t('g1'), 'egg'));
+          row(opt('2', t('g2'), 'egg'));
+          row(opt('0', t('gback')));
+        } else {
+          row(opt('1', t('o1')));
+          row(opt('2', t('o2')));
+          row(opt('3', t('o3')));
+          row(opt('4', t('o4')));
+        }
+        scroll();
+        return;
+      }
+
+      if (mode === 'games') {
+        if (cmd === '0' || cmd === 'back' || cmd === 'exit') {
+          row('<span class="p">' + esc(t('back')) + '</span>', 'dim');
+          renderMain();
+          return;
+        }
+        var g = GAMES[cmd];
+        if (g) {
+          row('<span class="c">' + esc(t('playing')) + ' · ' + esc(g.n) + '</span>');
+          window.open(g.url, '_blank', 'noopener');
+          scroll();
+          return;
+        }
+        row('<span class="err">' + esc(t('unknown')) + ' ' + esc(cmd) + '</span> — ' + esc(t('tryHelp')), 'err');
+        scroll();
+        return;
+      }
+
+      // main mode
+      if (NAV[cmd]) {
+        row('<span class="c">' + esc(t('go')) + ' · ' + esc(t('o' + cmd)) + '</span>');
+        nav(NAV[cmd]);
+        scroll();
+        return;
+      }
+      if (cmd === '5') {
+        renderGames();
+        return;
+      }
+      row('<span class="err">' + esc(t('unknown')) + ' ' + esc(cmd) + '</span> — ' + esc(t('tryHelp')), 'err');
+      scroll();
+    }
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        var v = input.value;
+        input.value = '';
+        exec(v);
+      }
+    });
+    out.addEventListener('click', function (e) {
+      var o = e.target.closest('.opt');
+      if (!o) return;
+      input.value = o.getAttribute('data-key');
+      var v = input.value;
+      input.value = '';
+      exec(v);
+      input.focus();
+    });
+    out.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var o = e.target.closest('.opt');
+      if (!o) return;
+      e.preventDefault();
+      input.value = '';
+      exec(o.getAttribute('data-key'));
+      input.focus();
+    });
+    body.addEventListener('click', function (e) {
+      if (!e.target.closest('.opt')) input.focus();
+    });
+
+    renderMain();
+  })();
+</script>
+
+<style>
+  .term {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  }
+  :global(html[data-theme='light']) .term {
+    box-shadow: 0 20px 50px rgba(15, 109, 99, 0.1);
+  }
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .term-bar i {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--line-2);
+    display: block;
+  }
+  .term-bar i:nth-child(1) {
+    background: #e06c5b;
+  }
+  .term-bar i:nth-child(2) {
+    background: #e0b44f;
+  }
+  .term-bar i:nth-child(3) {
+    background: #4faf7d;
+  }
+  .term-bar .path {
+    margin-left: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--faint);
+  }
+  .term-body {
+    padding: 18px 18px 20px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .cli-out {
+    min-height: 150px;
+    max-height: 230px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-2) transparent;
+  }
+  .cli-out::-webkit-scrollbar {
+    width: 6px;
+  }
+  .cli-out::-webkit-scrollbar-thumb {
+    background: var(--line-2);
+    border-radius: 3px;
+  }
+  .cli-out :global(.row) {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .cli-out :global(.row.echo) {
+    color: var(--fg);
+  }
+  .cli-out :global(.row.err) {
+    color: #e06c5b;
+  }
+  .cli-out :global(.row.dim) {
+    color: var(--faint);
+  }
+  .cli-out :global(.opt) {
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 1px 4px;
+    margin: 0 -4px;
+    transition:
+      background var(--t, 0.15s),
+      color var(--t, 0.15s);
+  }
+  .cli-out :global(.opt:hover),
+  .cli-out :global(.opt:focus-visible) {
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--fg);
+    outline: none;
+  }
+  .cli-out :global(.opt .num) {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .cli-out :global(.opt.egg .num) {
+    color: var(--copper);
+  }
+  .cli-out :global(.opt.egg:hover),
+  .cli-out :global(.opt.egg:focus-visible) {
+    background: color-mix(in srgb, var(--copper) 16%, transparent);
+  }
+  .cli-out :global(.games-title) {
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    animation: eggGlow 1.8s ease-in-out infinite;
+  }
+  @keyframes eggGlow {
+    0%,
+    100% {
+      text-shadow:
+        0 0 3px color-mix(in srgb, var(--accent) 40%, transparent),
+        0 0 8px color-mix(in srgb, var(--accent) 20%, transparent);
+      filter: brightness(1);
+    }
+    50% {
+      text-shadow:
+        0 0 6px color-mix(in srgb, var(--accent) 70%, transparent),
+        0 0 16px color-mix(in srgb, var(--accent) 45%, transparent),
+        0 0 26px color-mix(in srgb, var(--copper) 22%, transparent);
+      filter: brightness(1.18);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cli-out :global(.games-title) {
+      animation: none;
+      text-shadow: 0 0 6px color-mix(in srgb, var(--accent) 50%, transparent);
+    }
+  }
+  .cli-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .cli-ps {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .cli-input {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    outline: none;
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    caret-color: var(--accent);
+    padding: 0;
+  }
+  .cli-input::placeholder {
+    color: var(--faint);
+  }
+</style>

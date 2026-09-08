@@ -1,0 +1,22 @@
+{
+  "universe_usage_history": [
+    {
+      "universe": "Ocean's Eleven",
+      "assignment_id": "blog-reengineering-2026-09-08",
+      "used_at": "2026-09-08T15:13:53.925+02:00"
+    }
+  ],
+  "assignment_cast_snapshots": {
+    "blog-reengineering-2026-09-08": {
+      "universe": "Ocean's Eleven",
+      "agents": {
+        "lead": "Danny",
+        "platform": "Rusty",
+        "editor": "Tess",
+        "frontend": "Basher",
+        "quality": "Livingston"
+      },
+      "created_at": "2026-09-08T15:13:53.925+02:00"
+    }
+  }
+}

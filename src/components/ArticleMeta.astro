@@ -1,0 +1,54 @@
+---
+// Article publish/update/reading-time meta line — no direct equivalent
+// screen in the export, so this reuses the export's own mono/faint "kind"
+// text style (`.post .date`/`.term-bar .path` pattern) instead of inventing
+// a new type scale.
+import { t, type Locale } from '../lib/i18n';
+import { formatDate } from '../lib/content';
+
+interface Props {
+  locale: Locale;
+  pubDate: Date;
+  updatedDate?: Date;
+  readingMinutes?: number;
+}
+
+const { locale, pubDate, updatedDate, readingMinutes } = Astro.props;
+---
+
+<p class="article-meta">
+  <span>
+    {t(locale, 'publishedOn')}{' '}
+    <time datetime={pubDate.toISOString()}>{formatDate(pubDate, locale)}</time>
+  </span>
+  {
+    updatedDate && (
+      <span class="article-meta__updated">
+        · {t(locale, 'updatedOn')}{' '}
+        <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate, locale)}</time>
+      </span>
+    )
+  }
+  {
+    readingMinutes && (
+      <span class="article-meta__reading">
+        · {readingMinutes} {locale === 'es' ? 'min de lectura' : 'min read'}
+      </span>
+    )
+  }
+</p>
+
+<style>
+  .article-meta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--faint);
+    margin: 0 0 16px;
+  }
+
+  .article-meta time {
+    font-weight: 600;
+    color: var(--fg);
+    font-family: var(--font-sans);
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+// Tag chips — no direct equivalent screen in the export, but reuses its own
+// `.t` tag-chip pattern (mono font, surface-2 background, hairline border)
+// from the portfolio repo cards instead of inventing new visual language.
+interface Props {
+  tags: string[];
+  label?: string;
+}
+
+const { tags, label } = Astro.props;
+---
+
+{
+  tags.length > 0 && (
+    <ul class="tag-list" aria-label={label}>
+      {tags.map((tag) => (
+        <li>
+          <span class="t">{tag}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .tag-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+  }
+  .t {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 3px 7px;
+  }
+</style>

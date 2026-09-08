@@ -1,0 +1,43 @@
+---
+// Shared rendering for a single post, used by both
+// src/pages/es/blog/[slug].astro and src/pages/en/blog/[slug].astro.
+import { render } from 'astro:content';
+import PostLayout from '../layouts/PostLayout.astro';
+import { blogPostPath, type Locale } from '../lib/i18n';
+import { estimateReadingMinutes, findTranslation, type BlogPost } from '../lib/content';
+
+interface Props {
+  locale: Locale;
+  post: BlogPost;
+  allPosts: BlogPost[];
+}
+
+const { locale, post, allPosts } = Astro.props;
+const { Content } = await render(post);
+
+const translations = (['es', 'en'] as const).flatMap((candidateLocale) => {
+  if (candidateLocale === locale) {
+    return [{ locale, path: blogPostPath(locale, post.data.slug) }];
+  }
+  const translation = findTranslation(allPosts, post.data.translationKey, candidateLocale);
+  return translation
+    ? [{ locale: candidateLocale, path: blogPostPath(candidateLocale, translation.data.slug) }]
+    : [];
+});
+
+const readingMinutes = estimateReadingMinutes(post.body ?? '');
+---
+
+<PostLayout
+  locale={locale}
+  title={post.data.title}
+  description={post.data.description}
+  path={blogPostPath(locale, post.data.slug)}
+  translations={translations}
+  pubDate={post.data.pubDate}
+  updatedDate={post.data.updatedDate}
+  tags={post.data.tags}
+  readingMinutes={readingMinutes}
+>
+  <Content />
+</PostLayout>

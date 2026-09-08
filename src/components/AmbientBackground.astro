@@ -1,0 +1,100 @@
+---
+// Ambient animated background — ported verbatim from `newdesign/index.html`
+// (`.bg-fx`, `.mesh`, two `.aura` blobs). Purely decorative, `aria-hidden`,
+// and respects `prefers-reduced-motion` exactly as the export does.
+---
+
+<div class="bg-fx" aria-hidden="true">
+  <div class="mesh"></div>
+  <div class="aura teal"></div>
+  <div class="aura copper"></div>
+</div>
+
+<style>
+  .bg-fx {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: var(--bg);
+  }
+  .bg-fx .mesh {
+    position: absolute;
+    inset: -40px;
+    background-image: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--fg) 8%, transparent) 1px,
+      transparent 1.4px
+    );
+    background-size: 34px 34px;
+    opacity: 0.5;
+    animation: gridDrift 40s linear infinite;
+    mask-image: radial-gradient(ellipse 130% 90% at 50% 0%, #000 55%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 130% 90% at 50% 0%, #000 55%, transparent 100%);
+  }
+  .bg-fx .aura {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    will-change: transform, opacity;
+  }
+  .bg-fx .aura.teal {
+    width: 52vw;
+    height: 52vw;
+    background: radial-gradient(circle, var(--accent), transparent 70%);
+    top: -14vw;
+    left: -10vw;
+    animation: auraA 26s ease-in-out infinite;
+  }
+  .bg-fx .aura.copper {
+    width: 46vw;
+    height: 46vw;
+    background: radial-gradient(circle, var(--copper), transparent 70%);
+    top: 38vh;
+    right: -14vw;
+    animation: auraB 32s ease-in-out infinite;
+  }
+  .bg-fx .aura {
+    opacity: 0.16;
+  }
+  html[data-theme='light'] .bg-fx .aura {
+    opacity: 0.34;
+    filter: blur(70px);
+  }
+  html[data-theme='light'] .bg-fx .mesh {
+    opacity: 0.7;
+  }
+  @keyframes gridDrift {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(34px);
+    }
+  }
+  @keyframes auraA {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(6vw, 4vh) scale(1.12);
+    }
+  }
+  @keyframes auraB {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(-5vw, -4vh) scale(1.15);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bg-fx .mesh,
+    .bg-fx .aura {
+      animation: none;
+    }
+  }
+</style>

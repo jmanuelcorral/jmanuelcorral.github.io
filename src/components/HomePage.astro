@@ -1,0 +1,43 @@
+---
+// Home / listing page assembly — composes the full `newdesign/index.html`
+// page (hero+terminal, portfolio, CV, posts, labs, footer) for a given
+// locale. Rendered by both src/pages/es/index.astro and
+// src/pages/en/index.astro so the two locale routes stay logic-identical
+// while remaining separate, static, contract-defined routes.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import PortfolioSection from '../components/PortfolioSection.astro';
+import CvSection from '../components/CvSection.astro';
+import PostsSection from '../components/PostsSection.astro';
+import LabsSection from '../components/LabsSection.astro';
+import { localePath, type Locale } from '../lib/i18n';
+import { HOME_COPY } from '../lib/homeCopy';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = HOME_COPY[locale];
+
+const translations = [
+  { locale: 'es' as const, path: localePath('es') },
+  { locale: 'en' as const, path: localePath('en') },
+];
+---
+
+<BaseLayout
+  locale={locale}
+  title={copy.seo.title}
+  description={copy.seo.description}
+  path={localePath(locale)}
+  translations={translations}
+  onHome
+  structuredData={{ kind: 'website', name: copy.seo.title, description: copy.seo.description }}
+>
+  <Hero locale={locale} />
+  <PortfolioSection locale={locale} />
+  <CvSection locale={locale} />
+  <PostsSection locale={locale} />
+  <LabsSection locale={locale} />
+</BaseLayout>

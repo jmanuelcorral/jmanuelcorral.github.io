@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CV — José Manuel Corral Céspedes</title>
+<style>
+  :root{
+    --ink:#15181d;--fg:#23272f;--muted:#5b636e;--faint:#8a919b;
+    --line:#e2e5ea;--paper:#fff;--accent:#0f6d63;--accent-soft:#eaf4f2;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    --font-mono:"SF Mono","JetBrains Mono",ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#eef0f3;color:var(--fg);font-family:var(--font-sans);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 24px;}
+  .wrap{max-width:720px;width:100%;}
+  .head{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:28px;}
+  h1{font-size:26px;font-weight:800;letter-spacing:-.02em;color:var(--ink);}
+  .role{font-size:12.5px;font-weight:600;color:var(--accent);margin-top:5px;}
+  .meta{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);margin-top:8px;}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:620px){.cards{grid-template-columns:1fr;}}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:22px;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:border-color .15s,transform .15s,box-shadow .15s;}
+  .card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 10px 30px rgba(15,109,99,.12);}
+  .tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);border:1px solid #d5e7e4;border-radius:5px;padding:3px 8px;align-self:flex-start;}
+  .card h2{font-size:16px;font-weight:700;color:var(--ink);margin:14px 0 6px;}
+  .card p{font-size:11.5px;line-height:1.5;color:var(--muted);flex:1;}
+  .pages{font-family:var(--font-mono);font-size:10px;color:var(--faint);margin-top:12px;}
+  .go{font-size:11.5px;font-weight:700;color:var(--accent);margin-top:14px;}
+  .note{font-size:11px;color:var(--faint);margin-top:22px;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>José Manuel Corral Céspedes</h1>
+    <div class="role">Cloud Solution Architect · Azure · AI · Cloud Native</div>
+    <div class="meta">Barcelona · Currículum minimalista A4 · listo para imprimir / exportar a PDF</div>
+  </div>
+  <div class="cards">
+    <a class="card" href="resume-short.html">
+      <span class="tag">Versión corta</span>
+      <h2>CV de una página</h2>
+      <p>Resumen, experiencia reciente condensada y barra lateral con expertise, certificaciones, educación y open source. Ideal para envíos rápidos y ATS.</p>
+      <div class="pages">1 página A4 · 2 columnas</div>
+      <div class="go">Abrir →</div>
+    </a>
+    <a class="card" href="resume-extended.html">
+      <span class="tag">Versión extendida</span>
+      <h2>CV detallado</h2>
+      <p>Trayectoria completa con proyectos desglosados por rol, tecnologías y resultados. Para entrevistas técnicas y perfiles de arquitectura.</p>
+      <div class="pages">3 páginas A4 · 1 columna</div>
+      <div class="go">Abrir →</div>
+    </a>
+  </div>
+  <p class="note">Para exportar a PDF: abre cualquiera de las dos versiones y usa Imprimir → Guardar como PDF (tamaño A4, márgenes por defecto). Los estilos de impresión ya están optimizados.</p>
+</div>
+</body>
+</html>

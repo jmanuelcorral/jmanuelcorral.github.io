@@ -1,0 +1,64 @@
+---
+// Footer — ported verbatim from `newdesign/index.html` (<footer>,
+// `.foot-in`, `.foot-links`). Name/role/location are hardcoded in the
+// export regardless of language (only `foot.role` label is localized), so
+// that's preserved as-is here too.
+import type { Locale } from '../lib/i18n';
+import { HOME_COPY } from '../lib/homeCopy';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const copy = HOME_COPY[locale];
+---
+
+<footer>
+  <div class="foot-in">
+    <div class="l"><b>José Manuel Corral Céspedes</b> · <span>{copy.foot.role}</span> · Barcelona</div>
+    <div class="foot-links">
+      <a href="https://github.com/jmanuelcorral" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://linkedin.com/in/jmanuelcorral" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="/resume-short.html">CV</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--line);
+    margin-top: 90px;
+  }
+  .foot-in {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 40px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .foot-in .l {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--faint);
+  }
+  .foot-in .l b {
+    color: var(--fg);
+    font-family: var(--font-sans);
+  }
+  .foot-links {
+    display: flex;
+    gap: 18px;
+  }
+  .foot-links a {
+    font-size: 12.5px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .foot-links a:hover {
+    color: var(--accent);
+  }
+</style>

@@ -1,0 +1,154 @@
+---
+// PostLayout: the reading layout for a single article. No post/article
+// screen exists in the export (only home/listing was designed), so this is
+// an *extrapolation*: built strictly from patterns already established
+// elsewhere in the design (surface/line/mono tokens, `.eyebrow`-style kind
+// label, `.t` tag chips, `.btn-ghost` back link, code-block styling in
+// global.css) rather than inventing new visual language. Disclosed in the
+// final report as a non-reference surface.
+import BaseLayout from './BaseLayout.astro';
+import ArticleMeta from '../components/ArticleMeta.astro';
+import TagList from '../components/TagList.astro';
+import { t, localePath, type Locale } from '../lib/i18n';
+
+interface Translation {
+  locale: Locale;
+  path: string;
+}
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  path: string;
+  translations?: Translation[];
+  pubDate: Date;
+  updatedDate?: Date;
+  tags: string[];
+  readingMinutes?: number;
+}
+
+const {
+  locale,
+  title,
+  description,
+  path,
+  translations = [],
+  pubDate,
+  updatedDate,
+  tags,
+  readingMinutes,
+} = Astro.props;
+---
+
+<BaseLayout
+  locale={locale}
+  title={title}
+  description={description}
+  path={path}
+  translations={translations}
+  ogType="article"
+  structuredData={{
+    kind: 'article',
+    headline: title,
+    description,
+    datePublished: pubDate,
+    dateModified: updatedDate,
+  }}
+>
+  <article class="article sec-pad">
+    <a class="btn btn-ghost article__back" href={localePath(locale)}>← {t(locale, 'backToBlog')}</a>
+    <header class="article__header">
+      <h1>{title}</h1>
+      <ArticleMeta locale={locale} pubDate={pubDate} updatedDate={updatedDate} readingMinutes={readingMinutes} />
+      <TagList tags={tags} label={t(locale, 'tags')} />
+    </header>
+    <div class="article__body">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .article {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .article__back {
+    margin-bottom: 32px;
+  }
+
+  .article__header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .article__header h1 {
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--fg);
+    margin-bottom: 16px;
+  }
+
+  .article__body {
+    color: var(--fg);
+    line-height: 1.75;
+    font-size: 16px;
+  }
+
+  .article__body :global(h2) {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin-top: 40px;
+    margin-bottom: 12px;
+  }
+
+  .article__body :global(h3) {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 32px;
+    margin-bottom: 10px;
+  }
+
+  .article__body :global(p) {
+    margin: 0 0 18px;
+  }
+
+  .article__body :global(ul),
+  .article__body :global(ol) {
+    margin: 0 0 18px;
+    padding-left: 22px;
+  }
+
+  .article__body :global(li) {
+    margin-bottom: 6px;
+  }
+
+  .article__body :global(pre) {
+    margin: 20px 0;
+  }
+
+  .article__body :global(a) {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .article__body :global(blockquote) {
+    margin: 20px 0;
+    padding: 4px 18px;
+    border-left: 3px solid var(--accent);
+    color: var(--muted);
+  }
+
+  .article__body :global(img) {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+  }
+</style>

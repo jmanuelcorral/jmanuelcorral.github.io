@@ -1,0 +1,85 @@
+/**
+ * DESIGN TOKEN SEAM — FROZEN FROM THE APPROVED `newdesign/` EXPORT
+ * =================================================================
+ * These custom properties are copied verbatim (names and values) from the
+ * approved OpenDesign export (`newdesign/index.html`, cross-checked against
+ * `newdesign/palette-proposal.html` and `newdesign/logo-animated.html`,
+ * which define the identical `:root` token set). This is now the visual
+ * contract for the site: colors, fonts, and max content width. Do not
+ * recolor/retheme/rename these — if the design changes, replace the values
+ * here (or swap this file) without touching component markup.
+ *
+ * Component/layout CSS must reference these tokens (var(--bg), var(--fg),
+ * etc.) exactly as the export does. A handful of *structural* tokens
+ * (spacing scale, radii, focus ring) are additive, non-visual scaffolding
+ * introduced only where the export had no CSS custom property of its own
+ * (it hard-codes pixel values inline instead) — see the "structural
+ * scaffolding" block below. These do not change any rendered value; they
+ * exist so future design swaps have a documented seam for that dimension
+ * too, without altering current pixel output.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* ---- Design tokens (verbatim from newdesign, dark = default) ---- */
+  --bg: #0c0f14;
+  --surface: #12161d;
+  --surface-2: #191e27;
+  --fg: #e9edf2;
+  --muted: #96a0ad;
+  --faint: #646d7a;
+  --line: #20262f;
+  --line-2: #2b323d;
+
+  --accent: #2dd4bf;
+  --accent-ink: #0f8378;
+  --accent-soft: rgba(45, 212, 191, 0.12);
+
+  --copper: #e8935f;
+  --copper-soft: rgba(232, 147, 95, 0.12);
+
+  --indigo: #8b9bff;
+  --indigo-soft: rgba(139, 155, 255, 0.12);
+
+  --ok: #4ade80;
+  --warn: #fbbf24;
+  --err: #f87171;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+  --maxw: 1080px;
+
+  /* ---- Structural scaffolding (not part of the visual export; see note
+     above). Values chosen to match the spacing already used throughout the
+     export (18px/20px/24px gaps, 8-14px radii) so introducing them changes
+     nothing visually today. ---- */
+  --radius-sm: 5px;
+  --radius-md: 9px;
+  --radius-lg: 14px;
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f5f7f9;
+  --surface: #ffffff;
+  --surface-2: #eef1f4;
+  --fg: #161b22;
+  --muted: #525d6a;
+  --faint: #858e99;
+  --line: #e1e6ea;
+  --line-2: #d0d7de;
+  --accent: #0f8378;
+  --accent-ink: #0b5d55;
+  --accent-soft: rgba(15, 131, 120, 0.1);
+  --copper: #c26a36;
+  --copper-soft: rgba(194, 106, 54, 0.1);
+  --indigo: #5766d6;
+  --indigo-soft: rgba(87, 102, 214, 0.1);
+  --ok: #16a34a;
+  --warn: #b7791f;
+  --err: #dc2626;
+}

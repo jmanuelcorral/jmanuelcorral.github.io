@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Propuesta de paleta — Landing de Jose</title>
+<style>
+:root{
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  --font-mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,monospace;
+
+  /* ---- Propuesta: Slate + Teal + Copper (dark) ---- */
+  --bg:#0c0f14;
+  --surface:#12161d;
+  --surface-2:#191e27;
+  --fg:#e9edf2;
+  --muted:#96a0ad;
+  --faint:#646d7a;
+  --line:#20262f;
+  --line-2:#2b323d;
+
+  --accent:#2dd4bf;        /* primario — acciones, enlaces */
+  --accent-ink:#0f8378;
+  --accent-soft:rgba(45,212,191,.12);
+
+  --copper:#e8935f;        /* secundario — flagship, novedades */
+  --copper-soft:rgba(232,147,95,.12);
+
+  --indigo:#8b9bff;        /* dominio — aprendizajes */
+  --indigo-soft:rgba(139,155,255,.12);
+
+  --ok:#4ade80;
+  --warn:#fbbf24;
+  --err:#f87171;
+}
+[data-theme="light"]{
+  --bg:#f5f7f9;
+  --surface:#ffffff;
+  --surface-2:#eef1f4;
+  --fg:#161b22;
+  --muted:#525d6a;
+  --faint:#858e99;
+  --line:#e1e6ea;
+  --line-2:#d0d7de;
+
+  --accent:#0f8378;
+  --accent-ink:#0b5d55;
+  --accent-soft:rgba(15,131,120,.10);
+
+  --copper:#c26a36;
+  --copper-soft:rgba(194,106,54,.10);
+
+  --indigo:#5766d6;
+  --indigo-soft:rgba(87,102,214,.10);
+
+  --ok:#16a34a;
+  --warn:#b7791f;
+  --err:#dc2626;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-sans);line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .3s,color .3s;}
+::selection{background:var(--accent);color:#03110f;}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);}
+.topbar-in{max-width:1080px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;}
+.brand{font-weight:800;letter-spacing:-.02em;font-size:15px;display:flex;align-items:center;gap:9px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.brand .m{font-family:var(--font-mono);font-size:11px;color:var(--faint);font-weight:500;margin-left:4px;}
+.theme-btn{width:34px;height:34px;border:1px solid var(--line-2);background:var(--surface);border-radius:8px;color:var(--muted);cursor:pointer;display:grid;place-items:center;font-size:15px;transition:border-color .15s,color .15s;}
+.theme-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* hero of the proposal doc */
+.head{padding:56px 0 34px;}
+.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:9px;margin-bottom:16px;}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent);}
+.head h1{font-size:clamp(28px,4.4vw,42px);font-weight:800;letter-spacing:-.03em;line-height:1.05;}
+.head h1 .hl{color:var(--accent);}
+.head p{color:var(--muted);font-size:15px;margin-top:16px;max-width:60ch;}
+
+.section-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:48px 0 18px;display:flex;align-items:center;gap:12px;}
+.section-label::after{content:"";flex:1;height:1px;background:var(--line);}
+
+/* swatches */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+.sw{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--surface);}
+.sw .chip{height:76px;display:flex;align-items:flex-end;padding:9px 11px;}
+.sw .meta{padding:11px 12px;}
+.sw .meta b{font-size:12.5px;font-weight:700;display:block;}
+.sw .meta code{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);}
+.sw .role{font-size:11px;color:var(--faint);margin-top:5px;display:block;line-height:1.4;}
+.chip .on{font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:5px;font-weight:600;}
+
+/* live component preview grid */
+.demo{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:start;}
+@media(max-width:820px){.demo{grid-template-columns:1fr;}}
+
+/* repo cards */
+.repos{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.repos{grid-template-columns:1fr;}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:20px;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s;}
+.card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.card.flag{grid-column:span 2;border-color:color-mix(in srgb,var(--copper) 32%,var(--line));background:linear-gradient(180deg,var(--copper-soft),transparent 40%),var(--surface);}
+@media(max-width:600px){.card.flag{grid-column:span 1;}}
+.badge{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;background:var(--copper-soft);color:var(--copper);border:1px solid color-mix(in srgb,var(--copper) 30%,transparent);border-radius:5px;padding:3px 8px;align-self:flex-start;margin-bottom:13px;}
+.repo-name{font-family:var(--font-mono);font-size:14px;font-weight:700;display:flex;align-items:center;gap:9px;margin-bottom:9px;}
+.repo-name svg{width:16px;height:16px;flex:none;color:var(--muted);}
+.card p.desc{font-size:13px;color:var(--muted);line-height:1.55;flex:1;}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;}
+.t{font-family:var(--font-mono);font-size:10px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:3px 7px;}
+.lang{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:12px;}
+.lang::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);}
+.repo-foot{display:flex;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+.repo-foot a{color:var(--accent);text-decoration:none;font-weight:600;font-size:12.5px;}
+
+/* side column: cv download + posts */
+.side{display:flex;flex-direction:column;gap:14px;}
+.dl{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:15px 17px;text-decoration:none;color:inherit;transition:border-color .15s;}
+.dl:hover{border-color:var(--accent);}
+.dl .ic{width:38px;height:38px;flex:none;border-radius:9px;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 26%,transparent);display:grid;place-items:center;color:var(--accent);font-family:var(--font-mono);font-size:11px;font-weight:700;}
+.dl .txt b{display:block;font-size:13.5px;font-weight:700;}
+.dl .txt span{font-size:11.5px;color:var(--muted);}
+.dl .arr{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--accent);font-weight:700;}
+
+.post{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;}
+.post .kind{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;display:inline-block;}
+.post.learn .kind{color:var(--indigo);}
+.post.exp .kind{color:var(--copper);}
+.post h4{font-size:15px;font-weight:700;line-height:1.3;margin-bottom:7px;}
+.post p{font-size:12.5px;color:var(--muted);line-height:1.5;}
+.post .date{font-family:var(--font-mono);font-size:10.5px;color:var(--faint);margin-top:12px;display:block;}
+
+/* buttons row */
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;}
+.btn{font-size:13px;font-weight:600;padding:10px 18px;border-radius:9px;border:1px solid transparent;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .15s;font-family:var(--font-sans);}
+.btn-primary{background:var(--accent);color:#03110f;}
+.btn-primary:hover{background:var(--accent-ink);}
+.btn-copper{background:var(--copper);color:#1a0d05;}
+.btn-copper:hover{filter:brightness(.94);}
+.btn-ghost{border-color:var(--line-2);color:var(--fg);background:var(--surface);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+
+/* status chips */
+.states{display:flex;gap:10px;flex-wrap:wrap;}
+.state{font-family:var(--font-mono);font-size:11px;font-weight:600;padding:6px 12px;border-radius:7px;display:inline-flex;align-items:center;gap:7px;}
+.state::before{content:"";width:8px;height:8px;border-radius:50%;}
+.state.ok{background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok);}.state.ok::before{background:var(--ok);}
+.state.warn{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn);}.state.warn::before{background:var(--warn);}
+.state.err{background:color-mix(in srgb,var(--err) 12%,transparent);color:var(--err);}.state.err::before{background:var(--err);}
+.state.info{background:var(--accent-soft);color:var(--accent);}.state.info::before{background:var(--accent);}
+
+.note{margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.6;border-left:2px solid var(--accent);padding-left:14px;}
+.note b{color:var(--fg);}
+
+footer{margin:64px 0 48px;padding-top:22px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);font-family:var(--font-mono);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-in">
+    <span class="brand"><span class="dot"></span>José Manuel Corral<span class="m">// propuesta de paleta</span></span>
+    <button class="theme-btn" id="themeBtn" aria-label="Cambiar tema">◐</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="head">
+    <span class="eyebrow">Slate · Teal · Copper</span>
+    <h1>Una paleta con <span class="hl">jerarquía cromática</span>,<br>no un solo acento aislado.</h1>
+    <p>Tu landing actual usa un único teal frío sobre casi-negro. La propuesta mantiene la densidad <code>tech/utility</code> pero añade un carbón azulado más profundo, un teal primario más vivo, y un cobre cálido de apoyo que solo aparece en lo destacado. Alterna el tema con ◐ para juzgar ambos modos.</p>
+  </div>
+
+  <!-- SWATCHES -->
+  <div class="section-label">Tokens de color</div>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:var(--bg)"><span class="on" style="background:var(--surface-2);color:var(--fg)">bg</span></div><div class="meta"><b>Fondo</b><code>#0c0f14</code><span class="role">Carbón azulado, más profundo que el casi-negro plano actual.</span></div></div>
+    <div class="sw"><div class="chip" style="background:var(--surface)"><span class="on" style="background:var(--surface-2);color:var(--fg)">surface</span></div><div class="meta"><b>Superficie</b><code>#12161d</code><span class="role">Tarjetas, terminal, nav.</span></div></div>
+    <div class="sw"><div class="chip" style="background:var(--accent)"><span class="on" style="background:rgba(0,0,0,.25);color:#fff">accent</span></div><div class="meta"><b>Teal primario</b><code>#2dd4bf</code><span class="role">Acciones, enlaces, foco. Más vivo para "pop" en dark.</span></div></div>
+    <div class="sw"><div class="chip" style="background:var(--copper)"><span class="on" style="background:rgba(0,0,0,.22);color:#fff">copper</span></div><div class="meta"><b>Cobre secundario</b><code>#e8935f</code><span class="role">Solo flagship + "nuevo". Usado con moderación.</span></div></div>
+    <div class="sw"><div class="chip" style="background:var(--indigo)"><span class="on" style="background:rgba(0,0,0,.22);color:#fff">indigo</span></div><div class="meta"><b>Índigo dominio</b><code>#8b9bff</code><span class="role">Codifica la sección Aprendizajes.</span></div></div>
+    <div class="sw"><div class="chip" style="background:var(--fg)"><span class="on" style="background:rgba(0,0,0,.15);color:var(--bg)">fg</span></div><div class="meta"><b>Texto</b><code>#e9edf2</code><span class="role">Titulares y cuerpo de alto contraste.</span></div></div>
+    <div class="sw"><div class="chip" style="background:var(--muted)"><span class="on" style="background:rgba(0,0,0,.2);color:#fff">muted</span></div><div class="meta"><b>Texto atenuado</b><code>#96a0ad</code><span class="role">Descripciones, metadatos.</span></div></div>
+    <div class="sw"><div class="chip" style="background:var(--line-2)"><span class="on" style="background:var(--surface);color:var(--fg)">line</span></div><div class="meta"><b>Bordes</b><code>#2b323d</code><span class="role">Divisores y contornos de tarjeta.</span></div></div>
+  </div>
+
+  <!-- STATES -->
+  <div class="section-label">Estados</div>
+  <div class="states">
+    <span class="state ok">estable</span>
+    <span class="state info">en curso</span>
+    <span class="state warn">experimental</span>
+    <span class="state err">deprecado</span>
+  </div>
+
+  <!-- LIVE COMPONENTS -->
+  <div class="section-label">Aplicado a tus componentes reales</div>
+  <div class="demo">
+    <div class="repos">
+      <a class="card flag" href="#">
+        <span class="badge">Proyecto principal</span>
+        <span class="repo-name"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>openteam</span>
+        <p class="desc">Orquestador de agentes con release train de 8 pasos (R0–R7). Consola web con árbol de agentes en tiempo real, routing + telemetría, logs por sesión y configuración editable.</p>
+        <span class="lang" style="--d:var(--copper)">TypeScript · Node</span>
+        <div class="repo-foot"><a href="#">Código →</a><a href="#">Docs →</a></div>
+      </a>
+      <a class="card" href="#">
+        <span class="repo-name"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>CCOInsights</span>
+        <p class="desc">Analítica y detección basada en visión sobre Azure. RAG para consulta de documentación operativa.</p>
+        <span class="lang">Python</span>
+        <div class="repo-foot"><a href="#">Código →</a></div>
+      </a>
+      <a class="card" href="#">
+        <span class="repo-name"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>Dockerwaiter</span>
+        <p class="desc">Orquestación de contenedores y pipelines DevOps. Automatiza despliegues reproducibles.</p>
+        <span class="lang">Go</span>
+        <div class="repo-foot"><a href="#">Código →</a></div>
+      </a>
+    </div>
+
+    <div class="side">
+      <a class="dl" href="#"><span class="ic">PDF</span><span class="txt"><b>CV — versión corta</b><span>1 página · A4</span></span><span class="arr">↓</span></a>
+      <a class="dl" href="#"><span class="ic">PDF</span><span class="txt"><b>CV — versión extendida</b><span>3 páginas · A4</span></span><span class="arr">↓</span></a>
+      <div class="post exp">
+        <span class="kind">Experimento · IA local</span>
+        <h4>Cuantización de modelos en local</h4>
+        <p>Comparativa de rendimiento y calidad al servir un modelo cuantizado en hardware de consumo.</p>
+        <span class="date">— próximamente</span>
+      </div>
+      <div class="post learn">
+        <span class="kind">Aprendizaje</span>
+        <h4>Patrones de routing multi-agente</h4>
+        <p>Notas sobre cómo enrutar tareas entre agentes especializados sin colisiones de autoridad.</p>
+        <span class="date">— próximamente</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="section-label">Botones e interacción</div>
+  <div class="btns">
+    <a class="btn btn-primary" href="#">Ver portfolio</a>
+    <a class="btn btn-copper" href="#">Descargar CV</a>
+    <a class="btn btn-ghost" href="#">CV online</a>
+  </div>
+  <p class="note"><b>Regla de uso del cobre:</b> aparece como máximo dos veces por pantalla — el proyecto principal y un CTA de descarga. El teal hace todo el trabajo pesado de enlaces/acciones; el índigo solo etiqueta la sección de aprendizajes. Así el color codifica jerarquía en vez de decorar.</p>
+
+  <footer>propuesta no destructiva · tu index.html actual no se ha modificado · alterna ◐ para ver dark/light</footer>
+</div>
+
+<script>
+(function(){
+  var btn=document.getElementById('themeBtn');
+  var root=document.documentElement;
+  var saved=localStorage.getItem('palette-proposal-theme');
+  if(saved==='light')root.setAttribute('data-theme','light');
+  btn.addEventListener('click',function(){
+    var isLight=root.getAttribute('data-theme')==='light';
+    if(isLight){root.removeAttribute('data-theme');localStorage.setItem('palette-proposal-theme','dark');}
+    else{root.setAttribute('data-theme','light');localStorage.setItem('palette-proposal-theme','light');}
+  });
+})();
+</script>
+</body>
+</html>

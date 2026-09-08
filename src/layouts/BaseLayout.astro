@@ -1,0 +1,74 @@
+---
+// BaseLayout: the shared document shell for every page (home + posts).
+// Owns <html lang>, the skip link, SEO head wiring, and the header/footer
+// chrome. Visual values all come from styles/global.css -> tokens.css.
+import '../styles/global.css';
+import SkipLink from '../components/SkipLink.astro';
+import SeoHead from '../components/SeoHead.astro';
+import AmbientBackground from '../components/AmbientBackground.astro';
+import SiteNav from '../components/SiteNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { otherLocales, type Locale } from '../lib/i18n';
+import type { StructuredDataInput } from '../lib/structuredData';
+
+interface Translation {
+  locale: Locale;
+  path: string;
+}
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  path: string;
+  translations?: Translation[];
+  ogType?: 'website' | 'article';
+  /** True on the locale's home/listing page, where nav section links can
+   * be bare hashes (#portfolio) instead of `/{locale}/#portfolio`. */
+  onHome?: boolean;
+  structuredData?: StructuredDataInput;
+}
+
+const {
+  locale,
+  title,
+  description,
+  path,
+  translations = [],
+  ogType = 'website',
+  onHome = false,
+  structuredData,
+} = Astro.props;
+
+const otherLocale = otherLocales(locale)[0] ?? locale;
+const otherLocalePath = translations.find((tr) => tr.locale === otherLocale)?.path ?? null;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <SeoHead
+      locale={locale}
+      title={title}
+      description={description}
+      path={path}
+      alternates={translations}
+      ogType={ogType}
+      suffixSiteName={!onHome}
+      structuredData={structuredData}
+    />
+  </head>
+  <body>
+    <AmbientBackground />
+    <SkipLink locale={locale} targetId="main-content" />
+    <SiteNav locale={locale} otherLocalePath={otherLocalePath} otherLocale={otherLocale} onHome={onHome} />
+    {onHome && <span id="top"></span>}
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter locale={locale} />
+  </body>
+</html>

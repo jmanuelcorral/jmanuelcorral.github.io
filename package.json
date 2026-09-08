@@ -1,0 +1,22 @@
+{
+  "name": "jmanuelcorral-astro",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "search:index": "echo 'Pagefind is not wired in yet - run `npx pagefind --site dist` after `npm run build` once Basher confirms a search UI slot, then commit the generated dist/pagefind assets are NOT committed (regen per deploy).' "
+  },
+  "dependencies": {
+    "astro": "^7.2.10",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.6.3"
+  }
+}

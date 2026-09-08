@@ -1,0 +1,87 @@
+---
+// Centralizes every <head> SEO concern: title, description, canonical,
+// hreflang alternates (incl. x-default), and basic OpenGraph tags. Pages
+// pass in the current locale/path plus the set of locales this exact
+// document is available in, so callers never have to hand-roll hreflang.
+import { LOCALE_HREFLANG, DEFAULT_LOCALE, type Locale } from '../lib/i18n';
+import { buildStructuredData, serializeJsonLd, type StructuredDataInput } from '../lib/structuredData';
+
+interface Alternate {
+  locale: Locale;
+  path: string; // absolute path, e.g. "/en/blog/hello-world/"
+}
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  path: string; // absolute path of the current page, e.g. "/es/blog/hola-mundo/"
+  alternates?: Alternate[];
+  ogType?: 'website' | 'article';
+  /** Set false when `title` is already a complete, brand-inclusive title
+   * (e.g. the home page's title, copied verbatim from the design export)
+   * that shouldn't get the " · jmanuelcorral" suffix appended. */
+  suffixSiteName?: boolean;
+  /** JSON-LD payload (WebSite for home pages, BlogPosting for post pages).
+   * Rendered as a static `<script type="application/ld+json">` — purely
+   * additive metadata, no visual effect. */
+  structuredData?: StructuredDataInput;
+}
+
+const {
+  locale,
+  title,
+  description,
+  path,
+  alternates = [],
+  ogType = 'website',
+  suffixSiteName = true,
+  structuredData,
+} = Astro.props;
+
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const canonicalUrl = new URL(path, siteUrl).toString();
+
+// x-default points at the default-locale version when available, otherwise
+// falls back to whichever alternate exists first.
+const xDefaultAlternate =
+  alternates.find((alt) => alt.locale === DEFAULT_LOCALE) ?? alternates[0];
+
+const pageTitle = suffixSiteName ? `${title} · jmanuelcorral` : title;
+
+const jsonLd = structuredData ? buildStructuredData(structuredData, locale, canonicalUrl) : null;
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+
+{
+  alternates.map((alt) => (
+    <link
+      rel="alternate"
+      hreflang={LOCALE_HREFLANG[alt.locale]}
+      href={new URL(alt.path, siteUrl).toString()}
+    />
+  ))
+}
+{
+  xDefaultAlternate && (
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL(xDefaultAlternate.path, siteUrl).toString()}
+    />
+  )
+}
+
+<meta property="og:type" content={ogType} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:locale" content={locale === 'es' ? 'es_ES' : 'en_US'} />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+
+{jsonLd && <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} is:inline />}

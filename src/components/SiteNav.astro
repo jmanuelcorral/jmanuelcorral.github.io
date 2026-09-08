@@ -1,0 +1,383 @@
+---
+// Site nav — ported verbatim from `newdesign/index.html` (<nav>, `.brand`
+// logo mark, `.nav-links`, `.cta`, `.lang-btn`, `.theme-btn`). Two behavior
+// adaptations (not visual changes) versus the raw export:
+//  1. The export's `#lang` button is a client-side text swap; here it's a
+//     real link to the equivalent page in the other locale (the site now
+//     has real bilingual routes), so it stays a plain, no-hydration link.
+//     When this exact document has no translation yet, it falls back to
+//     the other locale's home page and gets a descriptive `title` so the
+//     behavior is disclosed without changing its appearance.
+//  2. Section links (#portfolio/#cv/#posts/#labs) are anchors on the home
+//     page; from any other page they are prefixed with the locale's home
+//     path so they still resolve.
+import { localePath, type Locale } from '../lib/i18n';
+import { HOME_COPY } from '../lib/homeCopy';
+
+interface Props {
+  locale: Locale;
+  /** Absolute path to this exact document in the other locale, or null. */
+  otherLocalePath: string | null;
+  otherLocale: Locale;
+  /** True when nav section anchors should be bare (#portfolio) because
+   * we're already on the home page; false to prefix with the home path. */
+  onHome?: boolean;
+}
+
+const { locale, otherLocalePath, otherLocale, onHome = false } = Astro.props;
+const copy = HOME_COPY[locale];
+const otherCopy = HOME_COPY[otherLocale];
+const home = localePath(locale);
+const sectionHref = (hash: string) => (onHome ? hash : `${home}${hash}`);
+const langHref = otherLocalePath ?? localePath(otherLocale);
+const langTitle = otherLocalePath ? undefined : otherCopy.lang.aria;
+---
+
+<nav>
+  <div class="nav-in">
+    <a class="brand" href={`${home}#top`}
+      ><svg class="logo" viewBox="0 0 60 60" fill="none" aria-hidden="true"
+        ><path
+          d="M22 10c-5 0-6 3-6 8 0 4-1 6-4 7 3 1 4 3 4 7 0 5 1 8 6 8"
+          stroke="var(--accent)"
+          stroke-width="3.4"
+          stroke-linecap="round"
+          fill="none"></path><path
+          d="M38 10c5 0 6 3 6 8 0 4 1 6 4 7-3 1-4 3-4 7 0 5-1 8-6 8"
+          stroke="var(--copper)"
+          stroke-width="3.4"
+          stroke-linecap="round"
+          fill="none"></path><path
+          class="edge"
+          d="M30 14l-6 12"
+          style="--len:13;--delay:0s"
+          stroke-width="1.6"></path><path
+          class="edge"
+          d="M30 14l6 12"
+          style="--len:13;--delay:.5s"
+          stroke-width="1.6"></path><path
+          class="edge"
+          d="M24 26h12"
+          style="--len:12;--delay:1.6s"
+          stroke-width="1.6"></path><circle
+          class="anchor"
+          cx="30"
+          cy="14"
+          r="3.2"
+          fill="var(--accent)"
+          style="--delay:0s"></circle><circle
+          class="anchor"
+          cx="30"
+          cy="38"
+          r="3.2"
+          fill="var(--copper)"
+          style="--delay:2s"></circle><circle
+          class="node"
+          cx="24"
+          cy="26"
+          r="2.6"
+          fill="var(--fg)"
+          style="--delay:.8s"></circle><circle
+          class="node"
+          cx="36"
+          cy="26"
+          r="2.6"
+          fill="var(--fg)"
+          style="--delay:1.5s"></circle></svg
+      >Jose Corral</a
+    >
+    <div class="nav-links">
+      <a href={sectionHref('#portfolio')}>{copy.nav.portfolio}</a>
+      <a href={sectionHref('#cv')}>{copy.nav.cv}</a>
+      <a href={sectionHref('#posts')}>{copy.nav.posts}</a>
+      <a href={sectionHref('#labs')}>{copy.nav.labs}</a>
+      <a class="cta" href="https://github.com/jmanuelcorral" target="_blank" rel="noopener">GitHub</a>
+      <a class="lang-btn" href={langHref} aria-label={copy.lang.aria} title={langTitle}>{copy.lang.next}</a>
+      <button class="theme-btn" id="theme" aria-label={copy.nav.themeAria}>◐</button>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Theme toggle (persisted) — ported verbatim from newdesign/index.html.
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('theme');
+    var saved = localStorage.getItem('jc-theme');
+    if (saved) root.setAttribute('data-theme', saved);
+    if (btn)
+      btn.addEventListener('click', function () {
+        var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('jc-theme', next);
+      });
+  })();
+
+  // Header reveals on scroll — ported verbatim from newdesign/index.html.
+  (function () {
+    var nav = document.querySelector('nav');
+    if (!nav) return;
+    var ticking = false;
+    function update() {
+      nav?.classList.toggle('scrolled', window.scrollY > 8);
+      ticking = false;
+    }
+    window.addEventListener(
+      'scroll',
+      function () {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true },
+    );
+    update();
+  })();
+</script>
+
+<style>
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 1px solid transparent;
+    transition:
+      background 0.3s ease,
+      backdrop-filter 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  nav.scrolled {
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom-color: var(--line);
+    box-shadow: 0 1px 20px -8px rgba(0, 0, 0, 0.5);
+  }
+  .nav-in {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .brand {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-size: 15px;
+    color: var(--fg);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .brand .logo {
+    width: 34px;
+    height: 34px;
+    flex: none;
+  }
+  .brand .logo .edge {
+    stroke: var(--accent);
+    stroke-linecap: round;
+    fill: none;
+    stroke-dasharray: var(--len);
+    stroke-dashoffset: var(--len);
+    animation: edgePulse 4s ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  .brand .logo .node {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: nodePulse 4s ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  .brand .logo .anchor {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: anchorBreath 4s ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  @keyframes edgePulse {
+    0% {
+      stroke-dashoffset: var(--len);
+      opacity: 0;
+    }
+    18% {
+      opacity: 0.7;
+    }
+    45% {
+      stroke-dashoffset: 0;
+      opacity: 0.7;
+    }
+    70% {
+      stroke-dashoffset: 0;
+      opacity: 0.7;
+    }
+    92% {
+      stroke-dashoffset: calc(var(--len) * -1);
+      opacity: 0;
+    }
+    100% {
+      stroke-dashoffset: calc(var(--len) * -1);
+      opacity: 0;
+    }
+  }
+  @keyframes nodePulse {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    16% {
+      transform: scale(1.18);
+      opacity: 1;
+    }
+    30% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    72% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    90% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(0);
+      opacity: 0;
+    }
+  }
+  @keyframes anchorBreath {
+    0%,
+    100% {
+      transform: scale(0.86);
+    }
+    50% {
+      transform: scale(1.08);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .brand .logo .edge {
+      stroke-dashoffset: 0;
+      opacity: 0.55;
+      animation: none;
+    }
+    .brand .logo .node {
+      transform: none;
+      opacity: 1;
+      animation: none;
+    }
+    .brand .logo .anchor {
+      transform: none;
+      animation: none;
+    }
+  }
+  .nav-links {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .nav-links a {
+    font-size: 12.5px;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 7px 11px;
+    border-radius: 7px;
+    font-weight: 500;
+    transition:
+      color 0.15s,
+      background 0.15s;
+  }
+  .nav-links a:hover {
+    color: var(--fg);
+    background: var(--surface-2);
+  }
+  .theme-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--line-2);
+    background: var(--surface);
+    border-radius: 8px;
+    color: var(--muted);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition:
+      border-color 0.15s,
+      color 0.15s;
+    font-size: 14px;
+  }
+  .theme-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .lang-btn {
+    height: 34px;
+    min-width: 34px;
+    padding: 0 9px;
+    border: 1px solid var(--line-2);
+    background: var(--surface);
+    border-radius: 8px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    transition:
+      border-color 0.15s,
+      color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+  .lang-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  @media (max-width: 640px) {
+    .nav-links a:not(.cta) {
+      display: none;
+    }
+  }
+  .cta {
+    position: relative;
+    overflow: hidden;
+    background: var(--accent);
+    color: #fff !important;
+    font-weight: 600;
+    padding: 7px 14px !important;
+    transition:
+      background 0.2s,
+      transform 0.22s cubic-bezier(0.2, 0.7, 0.3, 1),
+      box-shadow 0.28s;
+  }
+  .cta::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 65%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    transform: skewX(-18deg);
+    transition: left 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+  .cta:hover::after {
+    left: 150%;
+  }
+  .nav-links a.cta:hover {
+    background: var(--accent-ink);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px color-mix(in srgb, var(--accent) 42%, transparent);
+  }
+</style>
