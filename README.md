@@ -3,6 +3,8 @@
 Personal site and bilingual (Spanish/English) software engineering notebook,
 built with [Astro](https://astro.build) and deployed to GitHub Pages.
 
+Production site: [josecorral.dev](https://josecorral.dev/).
+
 Spanish (`/es/`) is the canonical language; English (`/en/`) entries are
 translations and may lag behind. The root URL (`/`) redirects to `/es/`.
 

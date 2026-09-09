@@ -17,7 +17,7 @@ export async function GET(context: APIContext) {
   return rss({
     title: 'jmanuelcorral — software engineering notes',
     description: 'A collection of experiences, lessons and development resources',
-    site: context.site ?? new URL('https://jmanuelcorral.github.io'),
+    site: context.site ?? new URL('https://josecorral.dev'),
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,

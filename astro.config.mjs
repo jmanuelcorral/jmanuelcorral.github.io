@@ -4,7 +4,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://jmanuelcorral.github.io',
+  site: 'https://josecorral.dev',
   output: 'static',
   trailingSlash: 'always',
   // No UI framework integrations: components are plain Astro/HTML/CSS with

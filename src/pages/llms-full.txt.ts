@@ -36,7 +36,7 @@ function renderPost(site: URL, locale: 'es' | 'en', post: BlogPost): string {
 }
 
 export async function GET(context: APIContext) {
-  const site = context.site ?? new URL('https://jmanuelcorral.github.io');
+  const site = context.site ?? new URL('https://josecorral.dev');
   const [esPosts, enPosts] = await Promise.all([
     getPublishedPostsByLocale('es'),
     getPublishedPostsByLocale('en'),

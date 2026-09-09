@@ -17,7 +17,7 @@ export async function GET(context: APIContext) {
   return rss({
     title: 'jmanuelcorral — notas de ingeniería de software',
     description: 'Compendio de vivencias, experiencias y recursos de desarrollo',
-    site: context.site ?? new URL('https://jmanuelcorral.github.io'),
+    site: context.site ?? new URL('https://josecorral.dev'),
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,
