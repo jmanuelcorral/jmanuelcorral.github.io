@@ -1,16 +1,20 @@
 ---
-// Labs section — ported verbatim from `newdesign/index.html` (#labs:
-// `.post.stub` dashed placeholder cards). No real experiment data exists
-// yet, so per the design's own placeholder pattern these stay literal
-// placeholders (not replaced with invented "real" content).
+// Labs section — preserves the three-card OpenDesign structure while linking
+// the two published experiment guides from the canonical blog collection.
 import type { Locale } from '../lib/i18n';
 import { HOME_COPY } from '../lib/homeCopy';
+import { getPostsByLocale, formatShortDate } from '../lib/content';
+import { blogPostPath } from '../lib/i18n';
+import { taxonomyFor } from '../lib/postTaxonomy';
 
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
 const copy = HOME_COPY[locale];
+const experiments = (await getPostsByLocale(locale))
+  .filter((post) => post.data.tags.includes('experiment'))
+  .slice(0, 2);
 ---
 
 <section id="labs" class="sec-pad">
@@ -23,22 +27,19 @@ const copy = HOME_COPY[locale];
   </div>
 
   <div class="grid g-3">
-    <article class="post stub" data-cat="ia">
-      <div class="kind">{copy.labs.lab1Kind}</div>
-      <h4>{copy.labs.lab1Title}</h4>
-      <div class="ph w70"></div>
-      <div class="ph"></div>
-      <div class="ph w45"></div>
-      <div class="date">{copy.labs.pending}</div>
-    </article>
-    <article class="post stub" data-cat="ia">
-      <div class="kind">{copy.labs.lab2Kind}</div>
-      <h4>{copy.labs.lab2Title}</h4>
-      <div class="ph"></div>
-      <div class="ph w70"></div>
-      <div class="ph w45"></div>
-      <div class="date">{copy.labs.pending}</div>
-    </article>
+    {
+      experiments.map((post) => {
+        const taxonomy = taxonomyFor(post.data.translationKey);
+        return (
+          <a class="post" href={blogPostPath(locale, post.data.slug)} data-cat="ia">
+            <div class="kind">{taxonomy.kind[locale]}</div>
+            <h4>{post.data.title}</h4>
+            <p>{post.data.description}</p>
+            <div class="date">{formatShortDate(post.data.pubDate, locale)}</div>
+          </a>
+        );
+      })
+    }
     <article class="post stub" data-cat="ia">
       <div class="kind">{copy.labs.lab3Kind}</div>
       <h4>{copy.labs.lab3Title}</h4>

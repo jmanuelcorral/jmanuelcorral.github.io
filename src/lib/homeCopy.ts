@@ -90,8 +90,8 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     lang: { next: 'EN', aria: 'Cambiar a inglés' },
     hero: {
       eyebrow: 'Development · Cloud · IA · Open source',
-      titleHtml: 'Diseño arquitecturas <span class="hl">cloud e IA</span> y las comparto en abierto.',
-      lead: 'Soy Jose — Cloud Solution Architect con 19+ años en ingeniería de software, modernización de aplicaciones, cloud-native y sistemas multi-agente. Aquí cuelgo mi portfolio open source, mi CV y los experimentos que hago con IA local.',
+      titleHtml: 'Diseño arquitecturas <span class="hl">cloud e IA</span>.',
+      lead: 'Aquí encontrarás código, experiencias y aprendizajes.',
       meta1Html: '<b>Barcelona</b> · España',
       ctaPortfolio: 'Ver portfolio →',
       ctaCv: 'Descargar CV',
@@ -193,8 +193,8 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     lang: { next: 'ES', aria: 'Switch to Spanish' },
     hero: {
       eyebrow: 'Development · Cloud · AI · Open source',
-      titleHtml: 'I design <span class="hl">cloud & AI</span> architectures and share them in the open.',
-      lead: "I'm Jose — a Cloud Solution Architect with 19+ years in software engineering, app modernization, cloud-native and multi-agent systems. Here I share my open source portfolio, my résumé and the experiments I run with local AI.",
+      titleHtml: 'I design <span class="hl">cloud & AI</span> architectures.',
+      lead: "Here you'll find code, experiences and lessons learned.",
       meta1Html: '<b>Barcelona</b> · Spain',
       ctaPortfolio: 'View portfolio →',
       ctaCv: 'Download résumé',

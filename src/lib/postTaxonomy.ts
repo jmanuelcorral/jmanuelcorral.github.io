@@ -13,7 +13,7 @@
 // this table (no design equivalent exists) falls back to the design's own
 // generic bucket — the same "Post · Blog" / cat "devops" used for its
 // least-specific example (`hello-world`) — rather than inventing new copy.
-export type PostCategory = 'cloud' | 'devops';
+export type PostCategory = 'cloud' | 'devops' | 'ai';
 
 export interface PostTaxonomyEntry {
   cat: PostCategory;
@@ -26,6 +26,14 @@ export const POST_TAXONOMY: Record<string, PostTaxonomyEntry> = {
   'aspnet-core-elk': { cat: 'cloud', kind: { es: 'Post · Observabilidad', en: 'Post · Observability' } },
   'kubernetes-windows-10': { cat: 'cloud', kind: { es: 'Post · Kubernetes', en: 'Post · Kubernetes' } },
   'hello-world': { cat: 'devops', kind: { es: 'Post · Blog', en: 'Post · Blog' } },
+  'halostrix-vulkan-vs-rocm': {
+    cat: 'ai',
+    kind: { es: 'Experimento · Inferencia', en: 'Experiment · Inference' },
+  },
+  'halostrix-rocm-training-lab': {
+    cat: 'ai',
+    kind: { es: 'Experimento · Entrenamiento', en: 'Experiment · Training' },
+  },
 };
 
 export const DEFAULT_POST_TAXONOMY: PostTaxonomyEntry = {
