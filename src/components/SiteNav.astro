@@ -8,7 +8,7 @@
 //     When this exact document has no translation yet, it falls back to
 //     the other locale's home page and gets a descriptive `title` so the
 //     behavior is disclosed without changing its appearance.
-//  2. Section links (#portfolio/#cv/#posts/#labs) are anchors on the home
+//  2. Section links (#portfolio/#posts/#labs) are anchors on the home
 //     page; from any other page they are prefixed with the locale's home
 //     path so they still resolve.
 import { localePath, type Locale } from '../lib/i18n';
@@ -88,7 +88,13 @@ const langTitle = otherLocalePath ? undefined : otherCopy.lang.aria;
     >
     <div class="nav-links">
       <a href={sectionHref('#portfolio')}>{copy.nav.portfolio}</a>
-      <a href={sectionHref('#cv')}>{copy.nav.cv}</a>
+      <details class="cv-menu">
+        <summary>CV</summary>
+        <div class="cv-submenu" role="group" aria-label={copy.nav.cvMenuAria}>
+          <a href="/resume-short.html">{copy.nav.cvStandard}</a>
+          <a href="/resume-extended.html">{copy.nav.cvExtended}</a>
+        </div>
+      </details>
       <a href={sectionHref('#posts')}>{copy.nav.posts}</a>
       <a href={sectionHref('#labs')}>{copy.nav.labs}</a>
       <a class="cta" href="https://github.com/jmanuelcorral" target="_blank" rel="noopener">GitHub</a>
@@ -111,6 +117,32 @@ const langTitle = otherLocalePath ? undefined : otherCopy.lang.aria;
         root.setAttribute('data-theme', next);
         localStorage.setItem('jc-theme', next);
       });
+  })();
+
+  // Native disclosure handles mouse, touch, and keyboard activation. These
+  // small enhancements close it when navigation focus moves elsewhere.
+  (function () {
+    const menu = document.querySelector<HTMLDetailsElement>('.cv-menu');
+    if (!menu) return;
+    const summary = menu.querySelector<HTMLElement>('summary');
+
+    menu.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      menu.open = false;
+      summary?.focus();
+    });
+    document.addEventListener('focusin', function (event) {
+      if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+    });
+    menu.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        menu.open = false;
+      });
+    });
+    document.addEventListener('click', function (event) {
+      if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+    });
   })();
 
   // Header reveals on scroll — ported verbatim from newdesign/index.html.
@@ -299,6 +331,70 @@ const langTitle = otherLocalePath ? undefined : otherCopy.lang.aria;
     color: var(--fg);
     background: var(--surface-2);
   }
+  .cv-menu {
+    position: relative;
+  }
+  .cv-menu summary {
+    list-style: none;
+    font-size: 12.5px;
+    color: var(--muted);
+    padding: 7px 25px 7px 11px;
+    border-radius: 7px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition:
+      color 0.15s,
+      background 0.15s;
+  }
+  .cv-menu summary::-webkit-details-marker {
+    display: none;
+  }
+  .cv-menu summary::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-70%) rotate(45deg);
+    transition: transform 0.15s ease;
+  }
+  .cv-menu summary:hover,
+  .cv-menu[open] summary {
+    color: var(--fg);
+    background: var(--surface-2);
+  }
+  .cv-menu summary:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .cv-menu[open] summary::after {
+    transform: translateY(-20%) rotate(225deg);
+  }
+  .cv-submenu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 60;
+    min-width: 166px;
+    padding: 6px;
+    display: grid;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+  }
+  .cv-submenu a {
+    white-space: nowrap;
+    padding: 9px 10px;
+  }
+  :global(html[data-theme='light']) .cv-submenu {
+    box-shadow: 0 14px 36px rgba(15, 109, 99, 0.13);
+  }
   .theme-btn {
     width: 34px;
     height: 34px;
@@ -344,8 +440,16 @@ const langTitle = otherLocalePath ? undefined : otherCopy.lang.aria;
     color: var(--accent);
   }
   @media (max-width: 640px) {
-    .nav-links a:not(.cta) {
+    .nav-in {
+      padding-inline: 16px;
+      gap: 12px;
+    }
+    .nav-links > a:not(.cta) {
       display: none;
+    }
+    .cv-submenu {
+      right: 0;
+      left: auto;
     }
   }
   .cta {

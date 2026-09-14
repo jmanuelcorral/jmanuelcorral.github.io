@@ -14,7 +14,7 @@ This archive is the source of truth for turning the design into production code.
 - HTML screens detected: 7
 - Stylesheets detected: 0
 - Script/component files detected: 0
-- Supporting assets detected: 7
+- Supporting assets detected: 3
 
 ## Responsive contract
 Validate the implementation across this 2025–2026 viewport matrix:
@@ -78,10 +78,6 @@ For responsive web exports, treat these as a modern breakpoint system for one ad
 - None detected
 
 ## Assets and supporting files
-- `Jose_Corral_CV_Extended.pdf`
-- `Jose_Corral_CV_SHORT.pdf`
-- `mtsfs81s-Jose_Corral_CV_SHORT_2026.pdf`
-- `mtsfs824-Jose_Corral_CV_Extended_2026.pdf`
 - `mtslb7yp-image.png`
 - `mtslqga3-image.png`
 - `mtslwgga-image.png`

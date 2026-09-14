@@ -32,7 +32,12 @@ const T = {
   helpTitle: cli.helpTitle,
   cleared: cli.cleared,
 };
-const NAV: Record<string, string> = { '1': '#portfolio', '2': '#cv', '3': '#posts', '4': '#labs' };
+const NAV: Record<string, string> = {
+  '1': '#portfolio',
+  '2': '/resume-short.html',
+  '3': '#posts',
+  '4': '#labs',
+};
 const GAMES: Record<string, { n: string; url: string }> = {
   '1': { n: T.g1, url: 'https://josecorral.dev/barrelshift/' },
   '2': { n: T.g2, url: 'https://josecorral.dev/pinball/' },
@@ -118,8 +123,12 @@ const GAMES: Record<string, { n: string; url: string }> = {
       scroll();
     }
 
-    function nav(hash) {
-      var el = document.querySelector(hash);
+    function nav(destination) {
+      if (!destination.startsWith('#')) {
+        window.location.assign(destination);
+        return;
+      }
+      var el = document.querySelector(destination);
       if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 70, behavior: 'smooth' });
     }
 

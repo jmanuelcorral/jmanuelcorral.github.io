@@ -6,12 +6,8 @@
     "all": [
       "cv.html",
       "index.html",
-      "Jose_Corral_CV_Extended.pdf",
-      "Jose_Corral_CV_SHORT.pdf",
       "logo-animated.html",
       "logo-proposals.html",
-      "mtsfs81s-Jose_Corral_CV_SHORT_2026.pdf",
-      "mtsfs824-Jose_Corral_CV_Extended_2026.pdf",
       "mtslb7yp-image.png",
       "mtslqga3-image.png",
       "mtslwgga-image.png",
@@ -31,10 +27,6 @@
     "css": [],
     "scriptsAndComponents": [],
     "assets": [
-      "Jose_Corral_CV_Extended.pdf",
-      "Jose_Corral_CV_SHORT.pdf",
-      "mtsfs81s-Jose_Corral_CV_SHORT_2026.pdf",
-      "mtsfs824-Jose_Corral_CV_Extended_2026.pdf",
       "mtslb7yp-image.png",
       "mtslqga3-image.png",
       "mtslwgga-image.png"

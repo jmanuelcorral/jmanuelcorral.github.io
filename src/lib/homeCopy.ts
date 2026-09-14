@@ -1,12 +1,19 @@
-// Static (non-post) copy for the home surface, transcribed verbatim from
-// the `I18N` dictionary embedded in `newdesign/index.html`. Both locales
-// were already authored by the approved design — this preserves that real
-// copy instead of re-translating or paraphrasing it.
+// Static (non-post) copy for the home surface. The original values come
+// from `newdesign/index.html`; approved content updates live here so both
+// localized routes keep a single authoritative copy source.
 import type { Locale } from './i18n';
 
 export interface HomeCopy {
   seo: { title: string; description: string };
-  nav: { portfolio: string; cv: string; posts: string; labs: string; themeAria: string };
+  nav: {
+    portfolio: string;
+    cvMenuAria: string;
+    cvStandard: string;
+    cvExtended: string;
+    posts: string;
+    labs: string;
+    themeAria: string;
+  };
   lang: { next: string; aria: string };
   hero: {
     eyebrow: string;
@@ -20,23 +27,8 @@ export interface HomeCopy {
   flag: { badge: string; lang: string; desc: string };
   veta: { desc: string };
   cco: { desc: string };
-  foot: { code: string; docs: string; role: string };
+  foot: { code: string; docs: string; role: string; cvStandard: string };
   star: { eyebrow: string; title: string; sub: string; all: string };
-  cv: {
-    eyebrow: string;
-    title: string;
-    sub: string;
-    onlineTitle: string;
-    onlineText: string;
-    short: string;
-    extended: string;
-    dlShortT: string;
-    dlShortS: string;
-    dlExtT: string;
-    dlExtS: string;
-    idxT: string;
-    idxS: string;
-  };
   posts: { eyebrow: string; title: string; sub: string; fAll: string; all: string };
   labs: {
     eyebrow: string;
@@ -82,7 +74,9 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     },
     nav: {
       portfolio: 'Open source',
-      cv: 'CV',
+      cvMenuAria: 'Versiones del CV',
+      cvStandard: 'CV standard',
+      cvExtended: 'CV extended',
       posts: 'Aprendizajes',
       labs: 'Experimentos',
       themeAria: 'Cambiar tema',
@@ -94,7 +88,7 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
       lead: 'Aquí encontrarás código, experiencias y aprendizajes.',
       meta1Html: '<b>Barcelona</b> · España',
       ctaPortfolio: 'Ver portfolio →',
-      ctaCv: 'Descargar CV',
+      ctaCv: 'Ver CV →',
     },
     port: {
       eyebrow: 'Portfolio',
@@ -113,28 +107,17 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     cco: {
       desc: 'Continuous Cloud Optimization: dashboard de Power BI y guías para optimización continua, gobernanza y FinOps en Azure. Mantengo el proyecto bajo la organización Azure.',
     },
-    foot: { code: 'Código →', docs: 'Documentación →', role: 'Cloud Solution Architect' },
+    foot: {
+      code: 'Código →',
+      docs: 'Documentación →',
+      role: 'Cloud Solution Architect',
+      cvStandard: 'CV standard',
+    },
     star: {
       eyebrow: 'Starred',
       title: 'Proyectos que sigo',
       sub: 'Repos con estrella en mi GitHub — sobre todo sistemas multi-agente, herramientas de IA e infraestructura que uso o me inspiran.',
       all: 'Todas mis estrellas →',
-    },
-    cv: {
-      eyebrow: 'Currículum',
-      title: 'CV online',
-      sub: 'Versión online navegable en dos formatos: uno corto de una página y uno extendido con los proyectos desglosados.',
-      onlineTitle: 'Versión online',
-      onlineText:
-        'El mismo CV en formato web, minimalista y navegable. Ideal para compartir por enlace sin descargar nada.',
-      short: 'CV corto →',
-      extended: 'CV extendido →',
-      dlShortT: 'CV — versión corta',
-      dlShortS: 'Versión web · 1 página',
-      dlExtT: 'CV — versión extendida',
-      dlExtS: 'Versión web · 3 páginas',
-      idxT: 'Índice de versiones',
-      idxS: 'Comparar corto vs. extendido',
     },
     posts: {
       eyebrow: 'Aprendizajes',
@@ -185,7 +168,9 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     },
     nav: {
       portfolio: 'Open source',
-      cv: 'Résumé',
+      cvMenuAria: 'CV versions',
+      cvStandard: 'CV standard',
+      cvExtended: 'CV extended',
       posts: 'Learnings',
       labs: 'Experiments',
       themeAria: 'Toggle theme',
@@ -197,7 +182,7 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
       lead: "Here you'll find code, experiences and lessons learned.",
       meta1Html: '<b>Barcelona</b> · Spain',
       ctaPortfolio: 'View portfolio →',
-      ctaCv: 'Download résumé',
+      ctaCv: 'View CV →',
     },
     port: {
       eyebrow: 'Portfolio',
@@ -216,28 +201,17 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
     cco: {
       desc: 'Continuous Cloud Optimization: a Power BI dashboard and guidance for continuous optimization, governance and FinOps on Azure. I maintain the project under the Azure organization.',
     },
-    foot: { code: 'Code →', docs: 'Documentation →', role: 'Cloud Solution Architect' },
+    foot: {
+      code: 'Code →',
+      docs: 'Documentation →',
+      role: 'Cloud Solution Architect',
+      cvStandard: 'CV standard',
+    },
     star: {
       eyebrow: 'Starred',
       title: 'Projects I follow',
       sub: "Repos I've starred on GitHub — mostly multi-agent systems, AI tooling and infrastructure I use or that inspire me.",
       all: 'All my stars →',
-    },
-    cv: {
-      eyebrow: 'Résumé',
-      title: 'Online résumé',
-      sub: 'A browsable online version in two formats: a one-page short version and an extended one with projects broken down.',
-      onlineTitle: 'Online version',
-      onlineText:
-        'The same résumé in a minimal, browsable web format. Ideal to share by link without downloading anything.',
-      short: 'Short résumé →',
-      extended: 'Extended résumé →',
-      dlShortT: 'Résumé — short version',
-      dlShortS: 'Web version · 1 page',
-      dlExtT: 'Résumé — extended version',
-      dlExtS: 'Web version · 3 pages',
-      idxT: 'Version index',
-      idxS: 'Compare short vs. extended',
     },
     posts: {
       eyebrow: 'Learnings',
@@ -263,7 +237,7 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
       boot: 'jmanuelcorralOS v1.0 — session started',
       hi: "Hi, I'm Jose. Type a number and press Enter to navigate:",
       o1: 'Open source',
-      o2: 'Résumé',
+      o2: 'CV',
       o3: 'Learnings',
       o4: 'Experiments',
       hint: 'help = help · clear = clear',
