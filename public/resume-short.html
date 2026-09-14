@@ -63,7 +63,13 @@
   .links a{font-size:9px;color:var(--muted);text-decoration:none;display:block;font-family:var(--font-mono);line-height:1.7;}
   .links a b{color:var(--ink);font-weight:700;font-family:var(--font-sans);font-size:9.5px;}
 
+  .cv-nav{max-width:210mm;margin:24px auto;padding:0 24px;}
+  .back-link{display:inline-flex;align-items:center;min-height:44px;padding:10px 18px;border:1px solid var(--line);border-radius:9px;background:var(--paper);color:var(--accent);font-size:13px;font-weight:600;line-height:1.5;text-decoration:none;}
+  .back-link:hover{background:var(--accent-soft);border-color:var(--accent);}
+  .back-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+
   @media print{
+    .cv-nav{display:none;}
     @page{size:A4;margin:0;}
     html,body{background:#fff;}
     .page{margin:0;box-shadow:none;width:210mm;min-height:0;height:auto;padding:10mm 14mm;overflow:visible;zoom:1;}
@@ -71,6 +77,9 @@
 </style>
 </head>
 <body>
+<nav class="cv-nav" aria-label="Navegación" lang="es">
+  <a class="back-link" href="/es/">← Volver a la web</a>
+</nav>
 <div class="page">
   <header>
     <div class="name">José Manuel Corral Céspedes</div>

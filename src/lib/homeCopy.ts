@@ -34,6 +34,11 @@ export interface HomeCopy {
     eyebrow: string;
     title: string;
     sub: string;
+    fAll: string;
+    fInference: string;
+    fTraining: string;
+    fRag: string;
+    all: string;
     lab1Kind: string;
     lab1Title: string;
     lab2Kind: string;
@@ -117,19 +122,24 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
       eyebrow: 'Starred',
       title: 'Proyectos que sigo',
       sub: 'Repos con estrella en mi GitHub — sobre todo sistemas multi-agente, herramientas de IA e infraestructura que uso o me inspiran.',
-      all: 'Todas mis estrellas →',
+      all: 'Ver todos →',
     },
     posts: {
       eyebrow: 'Aprendizajes',
       title: 'Cosas que voy aprendiendo',
       sub: 'Notas cortas sobre lo que estoy explorando: cloud, IA, arquitectura y herramientas.',
       fAll: 'Todos',
-      all: 'Todos mis posts →',
+      all: 'Ver todos →',
     },
     labs: {
       eyebrow: 'Experimentos',
       title: 'Laboratorio de IA local',
       sub: 'Pruebas y prototipos, sobre todo con modelos que corren en local: inferencia en edge, agentes, RAG offline.',
+      fAll: 'Todos',
+      fInference: 'Inferencia',
+      fTraining: 'Entrenamiento',
+      fRag: 'RAG',
+      all: 'Ver todos →',
       lab1Kind: 'Experimento · IA local',
       lab1Title: 'Inferencia local',
       lab2Kind: 'Experimento · Agentes',
@@ -211,19 +221,24 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
       eyebrow: 'Starred',
       title: 'Projects I follow',
       sub: "Repos I've starred on GitHub — mostly multi-agent systems, AI tooling and infrastructure I use or that inspire me.",
-      all: 'All my stars →',
+      all: 'View all →',
     },
     posts: {
       eyebrow: 'Learnings',
       title: "Things I'm learning",
       sub: "Short notes on what I'm exploring: cloud, AI, architecture and tooling.",
       fAll: 'All',
-      all: 'All my posts →',
+      all: 'View all →',
     },
     labs: {
       eyebrow: 'Experiments',
       title: 'Local AI lab',
       sub: 'Tests and prototypes, mostly with models running locally: edge inference, agents, offline RAG.',
+      fAll: 'All',
+      fInference: 'Inference',
+      fTraining: 'Training',
+      fRag: 'RAG',
+      all: 'View all →',
       lab1Kind: 'Experiment · Local AI',
       lab1Title: 'Local inference',
       lab2Kind: 'Experiment · Agents',

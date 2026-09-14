@@ -13,8 +13,7 @@ interface Props {
 const { locale } = Astro.props;
 const copy = HOME_COPY[locale];
 const experiments = (await getPostsByLocale(locale))
-  .filter((post) => post.data.tags.includes('experiment'))
-  .slice(0, 2);
+  .filter((post) => post.data.tags.includes('experiment'));
 ---
 
 <section id="labs" class="sec-pad">
@@ -24,14 +23,33 @@ const experiments = (await getPostsByLocale(locale))
       <div class="sec-title">{copy.labs.title}</div>
       <p class="sec-sub">{copy.labs.sub}</p>
     </div>
+    <div class="labs-actions" id="lab-filters">
+      <div class="filters" role="group" aria-label={copy.labs.eyebrow}>
+        <button type="button" class="fbtn on" data-f="all" aria-pressed="true" aria-controls="lab-grid">
+          {copy.labs.fAll}
+        </button>
+        <button type="button" class="fbtn" data-f="inference" aria-pressed="false" aria-controls="lab-grid">
+          {copy.labs.fInference}
+        </button>
+        <button type="button" class="fbtn" data-f="training" aria-pressed="false" aria-controls="lab-grid">
+          {copy.labs.fTraining}
+        </button>
+        <button type="button" class="fbtn" data-f="rag" aria-pressed="false" aria-controls="lab-grid">
+          {copy.labs.fRag}
+        </button>
+      </div>
+      <button type="button" class="btn btn-ghost" data-f="all" aria-controls="lab-grid">
+        {copy.labs.all}
+      </button>
+    </div>
   </div>
 
-  <div class="grid g-3">
+  <div class="grid g-3" id="lab-grid">
     {
       experiments.map((post) => {
         const taxonomy = taxonomyFor(post.data.translationKey);
         return (
-          <a class="post" href={blogPostPath(locale, post.data.slug)} data-cat="ia">
+          <a class="post" href={blogPostPath(locale, post.data.slug)} data-cat={taxonomy.experimentCategory}>
             <div class="kind">{taxonomy.kind[locale]}</div>
             <h4>{post.data.title}</h4>
             <p>{post.data.description}</p>
@@ -40,26 +58,70 @@ const experiments = (await getPostsByLocale(locale))
         );
       })
     }
-    <article class="post stub" data-cat="ia">
-      <div class="kind">{copy.labs.lab3Kind}</div>
-      <h4>{copy.labs.lab3Title}</h4>
-      <div class="ph w70"></div>
-      <div class="ph"></div>
-      <div class="ph w45"></div>
-      <div class="date">{copy.labs.pending}</div>
-    </article>
   </div>
   <div class="seed-note">{copy.labs.seed}</div>
 </section>
 
+<script>
+  const filterWrap = document.getElementById('lab-filters');
+  const labGrid = document.getElementById('lab-grid');
+
+  if (filterWrap && labGrid) {
+    filterWrap.addEventListener('click', (event) => {
+      const target = event.target;
+      const button = target instanceof Element ? target.closest('button[data-f]') : null;
+      if (!(button instanceof HTMLButtonElement)) return;
+      const category = button.dataset.f;
+
+      filterWrap.querySelectorAll<HTMLButtonElement>('.fbtn').forEach((filter) => {
+        const active = filter.dataset.f === category;
+        filter.classList.toggle('on', active);
+        filter.setAttribute('aria-pressed', String(active));
+      });
+      labGrid.querySelectorAll<HTMLElement>('.post').forEach((card) => {
+        card.classList.toggle('hidden', category !== 'all' && card.dataset.cat !== category);
+      });
+    });
+  }
+</script>
+
 <style>
+  .filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .fbtn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .fbtn:hover {
+    border-color: var(--line-2);
+    color: var(--fg);
+  }
+  .labs-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
   #labs .post .kind {
     color: var(--copper);
   }
-  #labs .fbtn.on {
-    background: var(--copper-soft);
-    border-color: color-mix(in srgb, var(--copper) 34%, transparent);
-    color: var(--copper);
+  .fbtn.on {
+    background: var(--accent-soft);
+    border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+    color: var(--accent);
+  }
+  .labs-actions .btn {
+    line-height: 1.5;
   }
   .post.stub {
     border-style: dashed;

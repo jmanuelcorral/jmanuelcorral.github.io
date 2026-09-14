@@ -18,6 +18,7 @@ export type PostCategory = 'cloud' | 'devops' | 'ai';
 export interface PostTaxonomyEntry {
   cat: PostCategory;
   kind: { es: string; en: string };
+  experimentCategory?: 'inference' | 'training' | 'rag';
 }
 
 export const POST_TAXONOMY: Record<string, PostTaxonomyEntry> = {
@@ -26,12 +27,20 @@ export const POST_TAXONOMY: Record<string, PostTaxonomyEntry> = {
   'aspnet-core-elk': { cat: 'cloud', kind: { es: 'Post · Observabilidad', en: 'Post · Observability' } },
   'kubernetes-windows-10': { cat: 'cloud', kind: { es: 'Post · Kubernetes', en: 'Post · Kubernetes' } },
   'hello-world': { cat: 'devops', kind: { es: 'Post · Blog', en: 'Post · Blog' } },
+  'aura-studio': { cat: 'devops', kind: { es: 'Post · Linux', en: 'Post · Linux' } },
   'halostrix-vulkan-vs-rocm': {
     cat: 'ai',
+    experimentCategory: 'inference',
+    kind: { es: 'Experimento · Inferencia', en: 'Experiment · Inference' },
+  },
+  'halostrix-qwen38-lemonade-sse': {
+    cat: 'ai',
+    experimentCategory: 'inference',
     kind: { es: 'Experimento · Inferencia', en: 'Experiment · Inference' },
   },
   'halostrix-rocm-training-lab': {
     cat: 'ai',
+    experimentCategory: 'training',
     kind: { es: 'Experimento · Entrenamiento', en: 'Experiment · Training' },
   },
 };

@@ -19,7 +19,8 @@ interface Props {
 }
 const { locale } = Astro.props;
 const copy = HOME_COPY[locale];
-const posts = await getPostsByLocale(locale);
+const posts = (await getPostsByLocale(locale))
+  .filter((post) => !post.data.tags.includes('experiment'));
 ---
 
 <section id="posts" class="sec-pad">
