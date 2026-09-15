@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostsSection from '../../components/PostsSection.astro';
+import LabsSection from '../../components/LabsSection.astro';
+import { LOCALES, localePath, type Locale } from '../../lib/i18n';
+import { HOME_COPY } from '../../lib/homeCopy';
+
+export function getStaticPaths() {
+  return LOCALES.flatMap((locale) =>
+    (['blog', 'experiments'] as const).map((listing) => ({
+      params: { locale, listing },
+      props: { locale, listing },
+    })),
+  );
+}
+
+interface Props {
+  locale: Locale;
+  listing: 'blog' | 'experiments';
+}
+
+const { locale, listing } = Astro.props;
+const copy = HOME_COPY[locale];
+const section = listing === 'blog' ? copy.posts : copy.labs;
+const path = localePath(locale, `${listing}/`);
+const translations = LOCALES.map((language) => ({
+  locale: language,
+  path: localePath(language, `${listing}/`),
+}));
+---
+
+<BaseLayout
+  locale={locale}
+  title={section.eyebrow}
+  description={section.sub}
+  path={path}
+  translations={translations}
+  structuredData={{ kind: 'website', name: section.eyebrow, description: section.sub }}
+>
+  {listing === 'blog' ? <PostsSection locale={locale} fullListing /> : <LabsSection locale={locale} fullListing />}
+</BaseLayout>

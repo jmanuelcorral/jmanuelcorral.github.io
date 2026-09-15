@@ -11,23 +11,26 @@
 import type { Locale } from '../lib/i18n';
 import { HOME_COPY } from '../lib/homeCopy';
 import { getPostsByLocale, formatShortDate } from '../lib/content';
-import { blogPostPath, t } from '../lib/i18n';
+import { blogPostPath, localePath, t } from '../lib/i18n';
 import { taxonomyFor } from '../lib/postTaxonomy';
 
 interface Props {
   locale: Locale;
+  fullListing?: boolean;
 }
-const { locale } = Astro.props;
+const { locale, fullListing = false } = Astro.props;
 const copy = HOME_COPY[locale];
+const Heading = fullListing ? 'h1' : 'div';
 const posts = (await getPostsByLocale(locale))
-  .filter((post) => !post.data.tags.includes('experiment'));
+  .filter((post) => !post.data.tags.includes('experiment'))
+  .slice(0, fullListing ? undefined : 3);
 ---
 
 <section id="posts" class="sec-pad">
   <div class="sec-head">
     <div>
       <div class="eyebrow ey-indigo">{copy.posts.eyebrow}</div>
-      <div class="sec-title">{copy.posts.title}</div>
+      <Heading class="sec-title">{copy.posts.title}</Heading>
       <p class="sec-sub">{copy.posts.sub}</p>
     </div>
     {
@@ -44,8 +47,8 @@ const posts = (await getPostsByLocale(locale))
               DevOps
             </button>
           </div>
-          <a class="btn btn-ghost" href="#posts">
-            {copy.posts.all}
+          <a class="btn btn-ghost" href={fullListing ? `${localePath(locale)}#posts` : localePath(locale, 'blog/')}>
+            {fullListing ? `← ${t(locale, 'navHome')}` : copy.posts.all}
           </a>
         </div>
       )

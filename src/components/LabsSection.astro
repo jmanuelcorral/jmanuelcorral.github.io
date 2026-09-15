@@ -4,23 +4,26 @@
 import type { Locale } from '../lib/i18n';
 import { HOME_COPY } from '../lib/homeCopy';
 import { getPostsByLocale, formatShortDate } from '../lib/content';
-import { blogPostPath } from '../lib/i18n';
+import { blogPostPath, localePath, t } from '../lib/i18n';
 import { taxonomyFor } from '../lib/postTaxonomy';
 
 interface Props {
   locale: Locale;
+  fullListing?: boolean;
 }
-const { locale } = Astro.props;
+const { locale, fullListing = false } = Astro.props;
 const copy = HOME_COPY[locale];
+const Heading = fullListing ? 'h1' : 'div';
 const experiments = (await getPostsByLocale(locale))
-  .filter((post) => post.data.tags.includes('experiment'));
+  .filter((post) => post.data.tags.includes('experiment'))
+  .slice(0, fullListing ? undefined : 3);
 ---
 
 <section id="labs" class="sec-pad">
   <div class="sec-head">
     <div>
       <div class="eyebrow ey-copper">{copy.labs.eyebrow}</div>
-      <div class="sec-title">{copy.labs.title}</div>
+      <Heading class="sec-title">{copy.labs.title}</Heading>
       <p class="sec-sub">{copy.labs.sub}</p>
     </div>
     <div class="labs-actions" id="lab-filters">
@@ -38,9 +41,9 @@ const experiments = (await getPostsByLocale(locale))
           {copy.labs.fRag}
         </button>
       </div>
-      <button type="button" class="btn btn-ghost" data-f="all" aria-controls="lab-grid">
-        {copy.labs.all}
-      </button>
+      <a class="btn btn-ghost" href={fullListing ? `${localePath(locale)}#labs` : localePath(locale, 'experiments/')}>
+        {fullListing ? `← ${t(locale, 'navHome')}` : copy.labs.all}
+      </a>
     </div>
   </div>
 
@@ -59,7 +62,6 @@ const experiments = (await getPostsByLocale(locale))
       })
     }
   </div>
-  <div class="seed-note">{copy.labs.seed}</div>
 </section>
 
 <script>
