@@ -1,55 +1,59 @@
-// Deterministic mapping from real content-collection posts to the exact
-// card "kind" label and filter category defined in `newdesign/index.html`
-// (its hardcoded p1..p5 posts). Keyed by `translationKey` because the five
-// real posts under `src/content/blog/**` are — by `legacyPath` — the very
-// same five posts the design illustrates:
-//   p1 /Validation-on-Entities      -> ddd-entity-validation   (Arquitectura/Architecture, cat=devops)
-//   p2 /Get-Coberture-working       -> dotnet-code-coverage    (DevOps,                    cat=devops)
-//   p3 /Add-Elk-to-aspnetcore       -> aspnet-core-elk         (Observabilidad/Observability, cat=cloud)
-//   p4 /Setup-Kubernetes-en-win10   -> kubernetes-windows-10   (Kubernetes,                cat=cloud)
-//   p5 /Hello-World                 -> hello-world             (Blog,                      cat=devops)
-// This lets every card reproduce the design's exact literal kind copy
-// instead of deriving a label from raw tags. Any future post not yet in
-// this table (no design equivalent exists) falls back to the design's own
-// generic bucket — the same "Post · Blog" / cat "devops" used for its
-// least-specific example (`hello-world`) — rather than inventing new copy.
-export type PostCategory = 'cloud' | 'devops' | 'ai';
+// Taxonomy vocabulary for the blog. The per-post values — which category a
+// post belongs to, what its card label reads — now live in each post's
+// frontmatter (see `src/content.config.ts`). This module keeps only what is
+// genuinely shared: the allowed values, how each one is labeled per locale,
+// and how to derive the filter buttons for a set of posts. A new post
+// becomes filterable the moment it declares its category, instead of
+// needing a side table updated in step.
+import type { Locale } from './i18n';
 
-export interface PostTaxonomyEntry {
-  cat: PostCategory;
-  kind: { es: string; en: string };
-  experimentCategory?: 'inference' | 'training' | 'rag';
+export type PostCategory = 'cloud' | 'devops' | 'ai';
+export type ExperimentCategory = 'inference' | 'training' | 'rag';
+
+/** A filter button: the value it filters on and the text it shows. */
+export interface FilterOption<T extends string> {
+  value: T;
+  label: string;
 }
 
-export const POST_TAXONOMY: Record<string, PostTaxonomyEntry> = {
-  'ddd-entity-validation': { cat: 'devops', kind: { es: 'Post · Arquitectura', en: 'Post · Architecture' } },
-  'dotnet-code-coverage': { cat: 'devops', kind: { es: 'Post · DevOps', en: 'Post · DevOps' } },
-  'aspnet-core-elk': { cat: 'cloud', kind: { es: 'Post · Observabilidad', en: 'Post · Observability' } },
-  'kubernetes-windows-10': { cat: 'cloud', kind: { es: 'Post · Kubernetes', en: 'Post · Kubernetes' } },
-  'hello-world': { cat: 'devops', kind: { es: 'Post · Blog', en: 'Post · Blog' } },
-  'aura-studio': { cat: 'devops', kind: { es: 'Post · Linux', en: 'Post · Linux' } },
-  'halostrix-vulkan-vs-rocm': {
-    cat: 'ai',
-    experimentCategory: 'inference',
-    kind: { es: 'Experimento · Inferencia', en: 'Experiment · Inference' },
-  },
-  'halostrix-qwen38-lemonade-sse': {
-    cat: 'ai',
-    experimentCategory: 'inference',
-    kind: { es: 'Experimento · Inferencia', en: 'Experiment · Inference' },
-  },
-  'halostrix-rocm-training-lab': {
-    cat: 'ai',
-    experimentCategory: 'training',
-    kind: { es: 'Experimento · Entrenamiento', en: 'Experiment · Training' },
-  },
+// Fixed display order, so derived buttons never reshuffle with content order.
+const POST_CATEGORY_ORDER: readonly PostCategory[] = ['cloud', 'devops', 'ai'];
+const EXPERIMENT_CATEGORY_ORDER: readonly ExperimentCategory[] = ['inference', 'training', 'rag'];
+
+const POST_CATEGORY_LABELS: Record<Locale, Record<PostCategory, string>> = {
+  es: { cloud: 'Cloud', devops: 'DevOps', ai: 'IA' },
+  en: { cloud: 'Cloud', devops: 'DevOps', ai: 'AI' },
 };
 
-export const DEFAULT_POST_TAXONOMY: PostTaxonomyEntry = {
-  cat: 'devops',
-  kind: { es: 'Post · Blog', en: 'Post · Blog' },
+const EXPERIMENT_CATEGORY_LABELS: Record<Locale, Record<ExperimentCategory, string>> = {
+  es: { inference: 'Inferencia', training: 'Entrenamiento', rag: 'RAG' },
+  en: { inference: 'Inference', training: 'Training', rag: 'RAG' },
 };
 
-export function taxonomyFor(translationKey: string): PostTaxonomyEntry {
-  return POST_TAXONOMY[translationKey] ?? DEFAULT_POST_TAXONOMY;
+function deriveFilterOptions<T extends string>(
+  values: Array<T | undefined>,
+  labels: Record<Locale, Record<T, string>>,
+  order: readonly T[],
+  locale: Locale,
+): FilterOption<T>[] {
+  const present = new Set(values.filter((value): value is T => value !== undefined));
+  return order
+    .filter((value) => present.has(value))
+    .map((value) => ({ value, label: labels[locale][value] }));
+}
+
+/** Filter buttons for the post categories actually present in `categories`. */
+export function postCategoryFilters(
+  categories: Array<PostCategory | undefined>,
+  locale: Locale,
+): FilterOption<PostCategory>[] {
+  return deriveFilterOptions(categories, POST_CATEGORY_LABELS, POST_CATEGORY_ORDER, locale);
+}
+
+/** Filter buttons for the experiment sub-categories present in `categories`. */
+export function experimentCategoryFilters(
+  categories: Array<ExperimentCategory | undefined>,
+  locale: Locale,
+): FilterOption<ExperimentCategory>[] {
+  return deriveFilterOptions(categories, EXPERIMENT_CATEGORY_LABELS, EXPERIMENT_CATEGORY_ORDER, locale);
 }

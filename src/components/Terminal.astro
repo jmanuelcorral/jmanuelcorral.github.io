@@ -6,6 +6,7 @@
 // page rather than one document swapping text client-side.
 import type { Locale } from '../lib/i18n';
 import { HOME_COPY } from '../lib/homeCopy';
+import { gameUrl } from '../data/games';
 
 interface Props {
   locale: Locale;
@@ -39,8 +40,8 @@ const NAV: Record<string, string> = {
   '4': '#labs',
 };
 const GAMES: Record<string, { n: string; url: string }> = {
-  '1': { n: T.g1, url: 'https://josecorral.dev/barrelshift/' },
-  '2': { n: T.g2, url: 'https://josecorral.dev/pinball/' },
+  '1': { n: T.g1, url: gameUrl('barrelshift') },
+  '2': { n: T.g2, url: gameUrl('pinball') },
 };
 ---
 

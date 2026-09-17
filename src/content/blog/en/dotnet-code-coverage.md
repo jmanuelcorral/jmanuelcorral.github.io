@@ -7,6 +7,8 @@ slug: 'code-coverage-for-dotnet-tests'
 pubDate: '2019-04-15T10:31:56-05:00'
 updatedDate: '2026-09-08'
 tags: ['dotnet', 'azure-devops', 'testing', 'code-coverage', 'beginner']
+category: 'devops'
+kind: 'Post · DevOps'
 draft: false
 ---
 

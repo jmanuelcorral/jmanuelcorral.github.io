@@ -7,6 +7,8 @@ slug: 'elk-with-aspnet-core-and-docker'
 pubDate: '2019-03-22T10:31:56-05:00'
 updatedDate: '2026-09-08'
 tags: ['aspnetcore', 'docker', 'elk', 'elasticsearch', 'kibana', 'logstash', 'beginner']
+category: 'cloud'
+kind: 'Post · Observability'
 draft: false
 ---
 

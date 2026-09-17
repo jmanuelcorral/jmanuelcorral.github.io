@@ -6,6 +6,8 @@ translationKey: 'hello-world'
 slug: 'hola-mundo'
 pubDate: '2019-03-15T13:31:56-05:00'
 tags: ['blog', 'personal']
+category: 'devops'
+kind: 'Post · Blog'
 draft: false
 legacyPath: '/Hello-World'
 ---

@@ -6,6 +6,9 @@ translationKey: 'halostrix-vulkan-vs-rocm'
 slug: 'vulkan-o-rocm-en-strix-halo'
 pubDate: '2026-09-09T15:30:00+02:00'
 tags: ['experiment', 'local-ai', 'amd', 'strix-halo', 'llama-cpp', 'vulkan', 'rocm', 'benchmarking']
+category: 'ai'
+kind: 'Experimento · Inferencia'
+experimentCategory: 'inference'
 draft: false
 ---
 

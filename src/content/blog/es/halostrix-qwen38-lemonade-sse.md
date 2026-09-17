@@ -6,6 +6,9 @@ translationKey: 'halostrix-qwen38-lemonade-sse'
 slug: 'qwen38-27b-local-lemonade-sse'
 pubDate: '2026-09-14T12:00:00+02:00'
 tags: ['experiment', 'local-ai', 'inference', 'qwen', 'lemonade', 'llama-cpp', 'vulkan', 'streaming', 'beginner']
+category: 'ai'
+kind: 'Experimento · Inferencia'
+experimentCategory: 'inference'
 draft: false
 ---
 

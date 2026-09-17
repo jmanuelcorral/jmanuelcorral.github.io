@@ -7,6 +7,8 @@ slug: 'setting-up-kubernetes-on-windows-10'
 pubDate: '2019-03-18T10:31:56-05:00'
 updatedDate: '2026-09-08'
 tags: ['kubernetes', 'windows', 'docker', 'beginner']
+category: 'cloud'
+kind: 'Post · Kubernetes'
 draft: false
 ---
 

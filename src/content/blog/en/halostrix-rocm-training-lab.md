@@ -6,6 +6,9 @@ translationKey: 'halostrix-rocm-training-lab'
 slug: 'from-rocm-smoke-test-to-fine-tuning-lab'
 pubDate: '2026-09-09T15:29:00+02:00'
 tags: ['experiment', 'local-ai', 'amd', 'rocm', 'docker', 'pytorch', 'fine-tuning', 'llama-factory', 'unsloth']
+category: 'ai'
+kind: 'Experiment · Training'
+experimentCategory: 'training'
 draft: false
 ---
 

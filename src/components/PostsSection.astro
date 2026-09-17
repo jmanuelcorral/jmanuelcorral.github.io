@@ -1,18 +1,15 @@
 ---
 // Posts section — ported visual pattern from `newdesign/index.html`
-// (#posts: `.filters`, `.fbtn`, `.grid.g-3`, `.post`) exactly, including the
-// literal "All / Cloud / DevOps" filter taxonomy and the "All my posts →"
-// CTA. The only data adaptation is that cards render the real content
-// collection instead of the export's 5 hardcoded links to the legacy
-// external site — each real post is mapped to the design's own kind label
-// and filter category via the deterministic, disclosed table in
-// `postTaxonomy.ts` (the real posts are, by `legacyPath`, the very same
-// five posts the design illustrates).
+// (#posts: `.filters`, `.fbtn`, `.grid.g-3`, `.post`). The design ships a
+// fixed "All / Cloud / DevOps" row and five hardcoded cards; here the cards
+// render the real content collection and the filter row is derived from the
+// categories those posts actually declare, so a button is never offered for
+// a filter that would show nothing.
 import type { Locale } from '../lib/i18n';
 import { HOME_COPY } from '../lib/homeCopy';
 import { getPostsByLocale, formatShortDate } from '../lib/content';
 import { blogPostPath, localePath, t } from '../lib/i18n';
-import { taxonomyFor } from '../lib/postTaxonomy';
+import { postCategoryFilters } from '../lib/postTaxonomy';
 
 interface Props {
   locale: Locale;
@@ -24,6 +21,10 @@ const Heading = fullListing ? 'h1' : 'div';
 const posts = (await getPostsByLocale(locale))
   .filter((post) => !post.data.tags.includes('experiment'))
   .slice(0, fullListing ? undefined : 3);
+const filters = postCategoryFilters(
+  posts.map((post) => post.data.category),
+  locale,
+);
 ---
 
 <section id="posts" class="sec-pad">
@@ -36,16 +37,21 @@ const posts = (await getPostsByLocale(locale))
     {
       posts.length > 0 && (
         <div class="posts-actions">
-          <div class="filters" id="post-filters">
-            <button class="fbtn on" data-f="all">
+          <div class="filters" id="post-filters" role="group" aria-label={copy.posts.eyebrow}>
+            <button type="button" class="fbtn on" data-f="all" aria-pressed="true" aria-controls="post-grid">
               {copy.posts.fAll}
             </button>
-            <button class="fbtn" data-f="cloud">
-              Cloud
-            </button>
-            <button class="fbtn" data-f="devops">
-              DevOps
-            </button>
+            {filters.map((filter) => (
+              <button
+                type="button"
+                class="fbtn"
+                data-f={filter.value}
+                aria-pressed="false"
+                aria-controls="post-grid"
+              >
+                {filter.label}
+              </button>
+            ))}
           </div>
           <a class="btn btn-ghost" href={fullListing ? `${localePath(locale)}#posts` : localePath(locale, 'blog/')}>
             {fullListing ? `← ${t(locale, 'navHome')}` : copy.posts.all}
@@ -60,48 +66,43 @@ const posts = (await getPostsByLocale(locale))
       <p class="sec-sub">{t(locale, 'noPosts')}</p>
     ) : (
       <div class="grid g-3" id="post-grid">
-        {posts.map((post) => {
-          const taxonomy = taxonomyFor(post.data.translationKey);
-          return (
-            <a class="post" href={blogPostPath(locale, post.data.slug)} data-cat={taxonomy.cat}>
-              <div class="kind">{taxonomy.kind[locale]}</div>
-              <h4>{post.data.title}</h4>
-              <p>{post.data.description}</p>
-              <div class="date">{formatShortDate(post.data.pubDate, locale)}</div>
-            </a>
-          );
-        })}
+        {posts.map((post) => (
+          <a class="post" href={blogPostPath(locale, post.data.slug)} data-cat={post.data.category}>
+            <div class="kind">{post.data.kind}</div>
+            <h4>{post.data.title}</h4>
+            <p>{post.data.description}</p>
+            <div class="date">{formatShortDate(post.data.pubDate, locale)}</div>
+          </a>
+        ))}
       </div>
     )
   }
 </section>
 
 <script>
-  // Post filters — ported verbatim from newdesign/index.html. Filters on
-  // the same fixed cloud/devops taxonomy as the design, now driven by real
-  // posts mapped to that taxonomy in postTaxonomy.ts.
-  (function () {
-    var wrap = document.getElementById('post-filters');
-    var grid = document.getElementById('post-grid');
-    if (!wrap || !grid) return;
-    var filterWrap = wrap;
-    var postGrid = grid;
-    filterWrap.addEventListener('click', function (e) {
-      var target = e.target;
-      var b = target instanceof Element ? target.closest('.fbtn') : null;
-      if (!(b instanceof HTMLElement)) return;
-      filterWrap.querySelectorAll('.fbtn').forEach(function (x) {
-        x.classList.remove('on');
+  // Post filters — same behavior as the lab filters: the clicked button
+  // becomes the active one (class and aria-pressed together) and cards that
+  // don't match its category are hidden.
+  const filterWrap = document.getElementById('post-filters');
+  const postGrid = document.getElementById('post-grid');
+
+  if (filterWrap && postGrid) {
+    filterWrap.addEventListener('click', (event) => {
+      const target = event.target;
+      const button = target instanceof Element ? target.closest('button[data-f]') : null;
+      if (!(button instanceof HTMLButtonElement)) return;
+      const category = button.dataset.f;
+
+      filterWrap.querySelectorAll<HTMLButtonElement>('.fbtn').forEach((filter) => {
+        const active = filter.dataset.f === category;
+        filter.classList.toggle('on', active);
+        filter.setAttribute('aria-pressed', String(active));
       });
-      b.classList.add('on');
-      var f = b.dataset.f;
-      postGrid.querySelectorAll('.post').forEach(function (p) {
-        if (p instanceof HTMLElement) {
-          p.classList.toggle('hidden', f !== 'all' && p.dataset.cat !== f);
-        }
+      postGrid.querySelectorAll<HTMLElement>('.post').forEach((card) => {
+        card.classList.toggle('hidden', category !== 'all' && card.dataset.cat !== category);
       });
     });
-  })();
+  }
 </script>
 
 <style>

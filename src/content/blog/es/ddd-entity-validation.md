@@ -7,6 +7,8 @@ slug: 'validaciones-en-entidades-de-dominio'
 pubDate: '2020-06-04T10:31:56-05:00'
 updatedDate: '2026-09-08'
 tags: ['dotnet', 'ddd', 'validation', 'architecture']
+category: 'devops'
+kind: 'Post · Arquitectura'
 draft: false
 legacyPath: '/Validation-on-Entities'
 ---

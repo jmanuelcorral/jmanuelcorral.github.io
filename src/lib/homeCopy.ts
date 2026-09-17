@@ -24,9 +24,6 @@ export interface HomeCopy {
     ctaCv: string;
   };
   port: { eyebrow: string; title: string; sub: string; allRepos: string };
-  flag: { badge: string; lang: string; desc: string };
-  veta: { desc: string };
-  cco: { desc: string };
   foot: { code: string; docs: string; role: string; cvStandard: string };
   star: { eyebrow: string; title: string; sub: string; all: string };
   posts: { eyebrow: string; title: string; sub: string; fAll: string; all: string };
@@ -35,9 +32,6 @@ export interface HomeCopy {
     title: string;
     sub: string;
     fAll: string;
-    fInference: string;
-    fTraining: string;
-    fRag: string;
     all: string;
     lab1Kind: string;
     lab1Title: string;
@@ -101,17 +95,6 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
       sub: 'Repositorios que mantengo o en los que contribuyo. Cada uno enlaza al código y a su documentación.',
       allRepos: 'Todos los repos →',
     },
-    flag: {
-      badge: 'Proyecto principal · maintainer',
-      lang: 'multi-agente',
-      desc: 'Orquestación de equipos de agentes de IA: un árbol de agentes en tiempo real con routing, telemetría y harness configurable (prompt, skills, herramientas). El proyecto en el que más estoy trabajando ahora mismo.',
-    },
-    veta: {
-      desc: 'Framework agéntico bajo la organización Veta: construcción y coordinación de agentes de IA en Python. Proyecto en desarrollo activo.',
-    },
-    cco: {
-      desc: 'Continuous Cloud Optimization: dashboard de Power BI y guías para optimización continua, gobernanza y FinOps en Azure. Mantengo el proyecto bajo la organización Azure.',
-    },
     foot: {
       code: 'Código →',
       docs: 'Documentación →',
@@ -136,9 +119,6 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
       title: 'Laboratorio de IA local',
       sub: 'Pruebas y prototipos, sobre todo con modelos que corren en local: inferencia en edge, agentes, RAG offline.',
       fAll: 'Todos',
-      fInference: 'Inferencia',
-      fTraining: 'Entrenamiento',
-      fRag: 'RAG',
       all: 'Ver todos →',
       lab1Kind: 'Experimento · IA local',
       lab1Title: 'Inferencia local',
@@ -200,17 +180,6 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
       sub: 'Repositories I maintain or contribute to. Each one links to the code and its documentation.',
       allRepos: 'All repos →',
     },
-    flag: {
-      badge: 'Flagship project · maintainer',
-      lang: 'multi-agent',
-      desc: "Orchestration of AI agent teams: a real-time agent tree with routing, telemetry and a configurable harness (prompt, skills, tools). The project I'm working on the most right now.",
-    },
-    veta: {
-      desc: 'Agentic framework under the Veta organization: building and coordinating AI agents in Python. Under active development.',
-    },
-    cco: {
-      desc: 'Continuous Cloud Optimization: a Power BI dashboard and guidance for continuous optimization, governance and FinOps on Azure. I maintain the project under the Azure organization.',
-    },
     foot: {
       code: 'Code →',
       docs: 'Documentation →',
@@ -235,9 +204,6 @@ export const HOME_COPY: Record<Locale, HomeCopy> = {
       title: 'Local AI lab',
       sub: 'Tests and prototypes, mostly with models running locally: edge inference, agents, offline RAG.',
       fAll: 'All',
-      fInference: 'Inference',
-      fTraining: 'Training',
-      fRag: 'RAG',
       all: 'View all →',
       lab1Kind: 'Experiment · Local AI',
       lab1Title: 'Local inference',

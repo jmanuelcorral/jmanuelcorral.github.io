@@ -5,6 +5,7 @@
 import type { APIContext } from 'astro';
 import { blogPostPath } from '../lib/i18n';
 import { getPublishedPostsByLocale } from '../lib/llms';
+import { siteUrl } from '../lib/seo';
 
 function toAbsolute(site: URL, path: string): string {
   return new URL(path, site).toString();
@@ -16,7 +17,7 @@ function postLine(site: URL, locale: 'es' | 'en', post: Awaited<ReturnType<typeo
 }
 
 export async function GET(context: APIContext) {
-  const site = context.site ?? new URL('https://josecorral.dev');
+  const site = siteUrl(context.site);
   const [esPosts, enPosts] = await Promise.all([
     getPublishedPostsByLocale('es'),
     getPublishedPostsByLocale('en'),

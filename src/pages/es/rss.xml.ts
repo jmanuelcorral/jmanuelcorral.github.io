@@ -7,6 +7,7 @@ import type { APIContext } from 'astro';
 import { getCollection } from 'astro:content';
 import { isPublished } from '../../lib/content';
 import { blogPostPath } from '../../lib/i18n';
+import { siteUrl } from '../../lib/seo';
 
 export async function GET(context: APIContext) {
   const posts = await getCollection(
@@ -19,7 +20,7 @@ export async function GET(context: APIContext) {
   return rss({
     title: 'jmanuelcorral — notas de ingeniería de software',
     description: 'Compendio de vivencias, experiencias y recursos de desarrollo',
-    site: context.site ?? new URL('https://josecorral.dev'),
+    site: siteUrl(context.site),
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,

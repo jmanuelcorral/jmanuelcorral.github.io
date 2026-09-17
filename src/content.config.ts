@@ -22,6 +22,15 @@ const blog = defineCollection({
       pubDate: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
       tags: z.array(z.string()).default([]),
+      // Filter category used by the post/experiment listings. Stored on the
+      // post so a new entry becomes filterable without touching a side table.
+      category: z.enum(['cloud', 'devops', 'ai']),
+      // Card label ("Post · Observabilidad"). Authored in the file's own
+      // language, exactly like `title` and `description`.
+      kind: z.string(),
+      // Sub-category for lab posts. Required when the post is tagged
+      // 'experiment', optional otherwise.
+      experimentCategory: z.enum(['inference', 'training', 'rag']).optional(),
       draft: z.boolean().default(false),
       // Optional pointer back to the legacy Jekyll URL for redirects/reference.
       // Only the Spanish source post carries this — the original Jekyll site
@@ -32,6 +41,10 @@ const blog = defineCollection({
     .refine((entry) => entry.lang === 'es' || entry.legacyPath === undefined, {
       message: 'legacyPath is only valid on Spanish ("es") entries',
       path: ['legacyPath'],
+    })
+    .refine((entry) => !entry.tags.includes('experiment') || entry.experimentCategory !== undefined, {
+      message: "posts tagged 'experiment' must declare an experimentCategory so the lab filters list them",
+      path: ['experimentCategory'],
     }),
 });
 
