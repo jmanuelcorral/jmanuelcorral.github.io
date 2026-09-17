@@ -4,27 +4,20 @@
 import { render } from 'astro:content';
 import PostLayout from '../layouts/PostLayout.astro';
 import { blogPostPath, type Locale } from '../lib/i18n';
-import { estimateReadingMinutes, findTranslation, type BlogPost } from '../lib/content';
+import { estimateReadingMinutes, type BlogPost } from '../lib/content';
+import type { AlternateLink } from '../lib/seo';
 
 interface Props {
   locale: Locale;
   post: BlogPost;
-  allPosts: BlogPost[];
+  /** Hreflang alternates resolved in `getStaticPaths` via
+   * `getPostAlternates`, so this component never needs the whole post
+   * collection just to look one translation up. */
+  translations: AlternateLink[];
 }
 
-const { locale, post, allPosts } = Astro.props;
+const { locale, post, translations } = Astro.props;
 const { Content } = await render(post);
-
-const translations = (['es', 'en'] as const).flatMap((candidateLocale) => {
-  if (candidateLocale === locale) {
-    return [{ locale, path: blogPostPath(locale, post.data.slug) }];
-  }
-  const translation = findTranslation(allPosts, post.data.translationKey, candidateLocale);
-  return translation
-    ? [{ locale: candidateLocale, path: blogPostPath(candidateLocale, translation.data.slug) }]
-    : [];
-});
-
 const readingMinutes = estimateReadingMinutes(post.body ?? '');
 ---
 

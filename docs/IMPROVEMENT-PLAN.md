@@ -19,7 +19,7 @@ email, `mailto:` ni PDFs de CV.
 | P0-3 | Validador de contenido bilingüe | Hecho |
 | P0-4 | Unificar el predicado "publicado" | Hecho |
 | P1 | Taxonomía, portfolio y URL base como datos | Hecho (rama `feat/content-as-data`) |
-| P2 | Deduplicación de CSS/JS, código muerto, accesibilidad de filtros | Pendiente |
+| P2 | Deduplicación de CSS/JS, código muerto, accesibilidad de filtros | Hecho (rama `refactor/dedup-and-a11y`) |
 | P3 | Cruft de Squad, búsqueda, correcciones a `AGENTS.md` | Pendiente |
 
 ---
@@ -241,51 +241,129 @@ esperado (ambos archivos restaurados después).
 
 ---
 
-## P2 — Deduplicación, código muerto y accesibilidad
+## P2 — Ejecutado en la rama `refactor/dedup-and-a11y`
 
-1. **`src/lib/seo.ts` ya no está entero sin usar, pero sigue a medias.** Desde P1
-   `siteUrl()` (`:16`) tiene consumidores reales: los dos RSS, los dos `llms*.txt`, el
-   redirect legacy y, vía `src/data/games.ts`, el terminal. Siguen sin un solo import
-   `getPostAlternates` (`:31`), `getStaticPageAlternates` (`:49`) y
-   `canonicalUrl` (`:54`): `SeoHead.astro:43` construye su propia URL canónica
-   localmente y `PostView.astro:17-25` reimplementa los alternates en línea.
-   Decisión pendiente: usar `getPostAlternates` desde `PostView.astro` (preferible, es
-   el código probado y da hreflang consistente) o borrar esas tres funciones.
-2. **Claves muertas de `homeCopy.ts`.** P1 ya sacó `flag`, `veta` y `cco` (a
-   `src/data/portfolio.ts`) y `labs.fInference` / `fTraining` / `fRag` (a las
-   etiquetas de `postTaxonomy.ts`). Quedan `lab1Kind`, `lab1Title`, `pending`, `seed`
-   sin ningún consumidor y arrastran CSS huérfano: `.post.stub`
-   (`LabsSection.astro:128-146`) y `.seed-note` (`:147-161`). Borrar claves y CSS
-   juntos.
-3. **CSS de filtros duplicado.** `.filters` / `.fbtn` / `:hover` / `.on` están
-   copiados literalmente en `PostsSection.astro:108-132` y `LabsSection.astro:91-124`.
-   Subirlos a `src/styles/global.css`.
-4. **Un solo script de filtros accesible.** P1 ya alineó el de posts con el patrón de
-   labs (`const` en vez de `var`, `querySelectorAll<T>`, y botones con `type`,
-   `aria-pressed` y `aria-controls`), así que la divergencia de accesibilidad
-   desapareció. Lo que queda es la duplicación de la lógica: extraer un helper común
-   (`initFilterSection(filterId, gridId)`) que usen ambas secciones.
-5. **Partir `homeCopy.ts` por dominio.** ~300 líneas de copia es/en mezclando nav,
-   hero, CLI y secciones; separar en `nav.ts` / `hero.ts` / `cli.ts` / `sections.ts`
-   para que un cambio de copy no mueva todo el archivo.
-6. **Unificar los RSS.** `src/pages/es/rss.xml.ts` y `src/pages/en/rss.xml.ts` son
-   idénticos salvo el literal del locale; extraer `buildFeed(locale)` y añadir
-   `lastBuildDate`.
-7. **Faltan imágenes sociales.** No hay `og:image` ni `twitter:image` en ninguna
-   página: los enlaces compartidos salen sin imagen. Añadir una imagen de sitio
-   (y por post si se quiere richer card), cuidando que sea un asset propio en
-   `public/` y no un PDF ni nada prohibido por §11 de `AGENTS.md`.
-8. **Limpiar los 4 avisos de `astro check`.** `Terminal.astro` pasa `T` y `NAV` por
-   `define:vars` y `astro check` no los resuelve (`:73` y otras dos). Cambiar a un
-   bloque JSON en el DOM (`<script type="application/json">`) elimina los avisos y de
-   paso quita strings interpolados en JS.
-9. **No atravesar `getStaticPaths` con todo el array.** Cada una de las 20 páginas de
-   post recibe `allPosts` completo cuando solo necesita una búsqueda de traducción;
-   resolver el par en `getStaticPaths` y pasar solo la traducción correspondiente.
-10. **Redirección raíz: aclarar o corregir.** `/` no es un 302: Astro estático emite
-    `<meta http-equiv="refresh" content="2;url=/es/">` con `noindex` (verificado en
-    `dist/index.html`). Bajar el retardo a `0` y enlazar `/es/` como canonical, o
-    dejarlo como está y corregir la documentación (§P3).
+El patrón de fondo de esta fase: **la misma idea escrita dos veces y ninguna de las
+dos resuelta del todo**. Filtros con CSS y JS gemelos en posts y labs, un `seo.ts`
+con funciones correctas que nadie importaba mientras los componentes reimplementaban
+lo mismo, y ~240 líneas de copia multiidioma en un solo archivo. Además de la
+deduplicación, aquí se cierran dos defectos reales de SEO: el sitio no tenía ninguna
+imagen social y la raíz `noindex` se anunciaba en el sitemap.
+
+### P2-1 / P2-9. Alternates resueltos una sola vez, arriba
+
+`getPostAlternates()` (`src/lib/seo.ts:31`) por fin tiene consumidor: los dos
+`getStaticPaths` de `src/pages/{es,en}/blog/[slug].astro` lo llaman y pasan al
+componente solo los enlaces de traducción ya resueltos. `PostView.astro` cambió de
+`{ locale, post, allPosts }` a `{ locale, post, translations: AlternateLink[] }`: se
+borró su reimplementación en línea de los hreflang y el import de `findTranslation`.
+Consecuencia de P2-9: ninguna página de post recibe ya el array completo de 20
+entradas a través de `getStaticPaths`.
+
+`getStaticPageAlternates()` (`:49`) sigue sin importadores; se conserva porque es el
+helper previsto para unificar los alternates de las páginas de índice.
+
+### P2-1b. `SeoHead` consume `seo.ts`
+
+`src/components/SeoHead.astro` importa ahora `siteUrl()` y `canonicalUrl()` en vez
+de construir la canónica a mano. El local que se llamaba `siteUrl` y tapaba la
+función se renombró a `site`, y los alternates se resuelven con
+`new URL(alt.path, site)`.
+
+### P2-2. Claves muertas y su CSS, en el mismo golpe
+
+`lab1Kind`/`lab1Title`, `lab2Kind`/`lab2Title`, `lab3Kind`/`lab3Title`, `pending` y
+`seed` ya no existen (verificado: cero consumidores). El CSS huérfano que
+arrastraban se borró junto con ellas: `.post.stub` y sus descendientes (`h4`, `.ph`,
+`.ph.w70`, `.ph.w45`) y `.seed-note` con su `::before`, todos en
+`LabsSection.astro`.
+
+### P2-3. CSS de filtros en `global.css`
+
+`.filters`, `.fbtn`, `.fbtn:hover` y `.fbtn.on` viven ahora una sola vez en
+`src/styles/global.css` (bloque `/* ---- category filter chips ---- */`), junto a una
+regla combinada `.posts-actions, .labs-actions` que unifica el layout de las dos
+cabeceras sin renombrar clases que usa `newdesign/`. En el CSS compilado quedan
+exactamente 3 ocurrencias de `.fbtn` (una por estado) en un único chunk.
+
+### P2-4. `initFilterSection()` compartido
+
+`src/lib/filterSection.ts` expone `initFilterSection(filterContainerId, gridId)`:
+un manejador delegado (`target.closest('button[data-f]')`) que sincroniza la clase
+`.on` con `aria-pressed` en los `.fbtn` del contenedor y `.hidden` en las
+`.post[data-cat]` de la rejilla. `PostsSection.astro` y `LabsSection.astro` quedan a
+una llamada cada uno y solo conservan en su `<style>` lo propio de la sección: el
+color de `.kind` (`--indigo` frente a `--copper`).
+
+Para que el helper pueda hablar de «contenedor de controles» en ambos casos,
+`id="lab-filters"` se movió del `<div class="labs-actions">` exterior al
+`<div class="filters">` interior, normalizando con `#post-filters` y con
+`newdesign/index.html:473`. No existía ninguna referencia externa al id antiguo.
+
+### P2-5. `src/copy/` repartido por dominio
+
+La copia vive ahora en `src/copy/site.ts` (`SEO_COPY`, `FOOT_COPY`), `nav.ts`
+(`NAV_COPY`, `LANG_COPY`), `hero.ts` (`HERO_COPY`), `sections.ts` (`PORT_COPY`,
+`STAR_COPY`, `POSTS_COPY`, `LABS_COPY`) y `cli.ts` (`CLI_COPY`, las 18 cadenas del
+terminal).
+
+**Decisión clave:** se conservan intactos la forma de la interfaz `HomeCopy` y el
+export `HOME_COPY`, ahora construidos por `compose(locale)`. Los nueve consumidores
+(`Hero`, `HomePage`, `SiteFooter`, `SiteNav`, `LabsSection`, `PortfolioSection`,
+`PostsSection`, `Terminal` y `[locale]/[listing]`) no cambiaron una importación: el
+reparto es invisible para quien llama. Las cadenas con HTML (`<span class="hl">`,
+`<b>Barcelona</b>`) se movieron literales. `homeCopy.ts` queda como compositor fino.
+
+### P2-6. RSS unificado con `lastBuildDate`
+
+`src/lib/feed.ts` concentra `FEED_META` (título, descripción y `language` por
+locale) y `buildFeed(locale, context)`: filtra por idioma y `isPublished`, ordena
+del más reciente al más antiguo y mapea las URLs con `blogPostPath()`. Los dos
+`src/pages/{es,en}/rss.xml.ts` quedan en nueve líneas: un envoltorio que llama al
+builder.
+
+`@astrojs/rss` no expone `lastBuildDate` como opción de primer nivel, así que se
+inyecta vía `customData` junto a `<language>`. Consecuencia: el RSS ya no es
+byte-idéntico entre builds (intencionado).
+
+### P2-7. Imagen social
+
+`scripts/build-og-image.mjs` genera `public/og-image.png` (1200×630) desde un SVG
+inline con `sharp`, reutilizando los tokens del tema oscuro de
+`src/styles/tokens.css` (fondo `#0c0f14`, acento `#2dd4bf`, cobre `#e8935f`) y el
+`mark()` del favicon. Solo contiene nombre, rol y dominio: nada prohibido por §11 de
+`AGENTS.md` (sin email, sin `mailto:`, sin PDF de CV).
+
+`SeoHead` recibe la nueva prop `ogImage?: string` con default `'/og-image.png'` y
+emite `og:image`, `og:image:width`, `og:image:height` y `twitter:image`.
+**Cambio visible intencionado:** `twitter:card` pasa de `summary` a
+`summary_large_image` en todo el sitio. La prop con default deja sitio para una
+tarjeta por post más rica sin tocar el componente de cabecera.
+
+### P2-8. Cero avisos de `astro check`
+
+`Terminal.astro` ya no pasa `T` ni `NAV` por `define:vars`: los datos se emiten en
+un `<script type="application/json" id="cli-data">` y el script del terminal los
+lee desde el DOM. Desaparecen los 4 avisos preexistentes y, de paso, los strings
+interpolados en JS.
+
+Detalle de implementación: TypeScript no conserva el estrechamiento de `const` dentro
+de `function` con hoisting, así que el primer intento con guarda de retorno temprano
+produjo cinco `ts(18047) 'out' is possibly 'null'`. La solución fue un helper
+`requireElement<T extends HTMLElement>(id)` dentro del IIFE que lanza si el elemento
+no está: el tipo se estrecha y un elemento ausente pasa de fallo silencioso a error
+ruidoso y diagnosticable.
+
+### P2-10. Redirección raíz explícita e instantánea
+
+`Astro.redirect()` en salida estática fija un *meta refresh* de 2 segundos, así que
+`/` se renderiza como página explícita: `<meta http-equiv="refresh" content="0;url=/es/">`,
+`<meta name="robots" content="noindex">`, `<link rel="canonical" href="…/es/">` y
+un enlace visible de respaldo.
+
+**Cambio necesario que lo acompaña:** una URL `noindex` no puede anunciarse en el
+sitemap, así que el `filter` de `astro.config.mjs` empieza ahora descartando
+`new URL(page).pathname !== '/'`. `dist/sitemap-0.xml` ya no lista la raíz.
 
 ---
 
@@ -316,10 +394,11 @@ umbrales):
 
 ```bash
 npm ci
-npm run check            # 0 errores; 4 hints preexistentes en Terminal.astro
+npm run check            # 0 errores, 0 avisos, 0 hints (desde P2-8)
 npm run validate:content # 20 posts, 0 errores, 0 avisos
 npm run build            # 33 páginas
 npm run preview
+node scripts/build-og-image.mjs  # regenera public/og-image.png (1200x630)
 ```
 
 Comprobaciones manuales recomendadas tras cambios de UI: menú móvil a 360/414/640 px

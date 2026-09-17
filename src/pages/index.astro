@@ -1,5 +1,28 @@
 ---
-// Root redirect to the default locale. Kept as a plain page-level redirect
-// (no server) so it works on static hosting like GitHub Pages.
-return Astro.redirect('/es/', 302);
+// Root → default locale. GitHub Pages has no server-side redirect, so a
+// static page is the closest equivalent. Astro's own `Astro.redirect()`
+// emits a 2-second meta refresh; an instant one is what the user actually
+// wants here. `noindex` keeps this stub out of search results, and the
+// destination is linked so crawlers and refresh-blockers still get through.
+import { DEFAULT_LOCALE } from '../lib/i18n';
+import { canonicalUrl, siteUrl } from '../lib/seo';
+import { SEO_COPY } from '../copy/site';
+
+const destination = `/${DEFAULT_LOCALE}/`;
+const target = canonicalUrl(siteUrl(Astro.site), destination);
 ---
+
+<!doctype html>
+<html lang={DEFAULT_LOCALE}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content={`0;url=${destination}`} />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={target} />
+    <title>{SEO_COPY[DEFAULT_LOCALE].title}</title>
+  </head>
+  <body>
+    <a href={destination}>{target}</a>
+  </body>
+</html>

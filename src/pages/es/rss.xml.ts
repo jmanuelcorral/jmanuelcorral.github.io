@@ -1,33 +1,9 @@
-// Per-locale RSS feed (Rusty-owned platform route). Draft posts are always
-// excluded regardless of environment — an RSS feed is published content,
-// not a preview surface, so this gates on the shared `isPublished`
-// predicate rather than re-deriving the rule locally.
-import rss from '@astrojs/rss';
+// Per-locale RSS feed (Rusty-owned platform route). The feed itself is
+// built by `src/lib/feed.ts`, which is where the "published only" rule
+// lives; this route only pins the locale.
 import type { APIContext } from 'astro';
-import { getCollection } from 'astro:content';
-import { isPublished } from '../../lib/content';
-import { blogPostPath } from '../../lib/i18n';
-import { siteUrl } from '../../lib/seo';
+import { buildFeed } from '../../lib/feed';
 
 export async function GET(context: APIContext) {
-  const posts = await getCollection(
-    'blog',
-    (entry) => entry.data.lang === 'es' && isPublished(entry),
-  );
-
-  posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-  return rss({
-    title: 'jmanuelcorral — notas de ingeniería de software',
-    description: 'Compendio de vivencias, experiencias y recursos de desarrollo',
-    site: siteUrl(context.site),
-    items: posts.map((post) => ({
-      title: post.data.title,
-      description: post.data.description,
-      pubDate: post.data.pubDate,
-      link: blogPostPath('es', post.data.slug),
-      categories: post.data.tags,
-    })),
-    customData: '<language>es</language>',
-  });
+  return buildFeed('es', context);
 }

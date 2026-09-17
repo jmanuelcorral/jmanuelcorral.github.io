@@ -64,33 +64,53 @@ const GAMES: Record<string, { n: string; url: string }> = {
   </div>
 </div>
 
-<script define:vars={{ T, NAV, GAMES }} is:inline>
-  (function () {
-    var out = document.getElementById('cli-out');
-    var input = document.getElementById('cli-input');
-    var body = document.getElementById('cli-body');
-    if (!out || !input) return;
-    var t = function (k) {
-      return T[k] != null ? T[k] : k;
-    };
-    var mode = 'main'; // 'main' | 'games'
+<script type="application/json" id="cli-data" is:inline set:html={JSON.stringify({ T, NAV, GAMES })}></script>
 
-    function row(html, cls) {
-      var d = document.createElement('div');
+<script>
+  // The strings, nav targets and game links are handed to the client script as
+  // a JSON block in the DOM instead of via `define:vars`. That directive
+  // splices raw values straight into the script source, which `astro check`
+  // cannot resolve (it flagged every interpolated global), and it embeds copy
+  // inside JS. Parsed JSON keeps the script self-contained and type-checked.
+  interface CliData {
+    T: Record<string, string>;
+    NAV: Record<string, string>;
+    GAMES: Record<string, { n: string; url: string }>;
+  }
+
+  (function () {
+    // Every element below is rendered by this component itself, so a missing
+    // one is a broken component, not a page condition worth degrading for.
+    function requireElement<T extends HTMLElement>(id: string): T {
+      const element = document.getElementById(id);
+      if (!element) throw new Error('Terminal: missing #' + id);
+      return element as T;
+    }
+
+    const dataEl = requireElement<HTMLElement>('cli-data');
+    const out = requireElement<HTMLElement>('cli-out');
+    const input = requireElement<HTMLInputElement>('cli-input');
+    const body = requireElement<HTMLElement>('cli-body');
+
+    const { T, NAV, GAMES } = JSON.parse(dataEl.textContent ?? '{}') as CliData;
+    const t = (k: string): string => T[k] ?? k;
+    let mode: 'main' | 'games' = 'main';
+
+    function row(html: string, cls?: string) {
+      const d = document.createElement('div');
       d.className = 'row' + (cls ? ' ' + cls : '');
       d.innerHTML = html;
       out.appendChild(d);
     }
-    function esc(s) {
-      return String(s).replace(/[&<>]/g, function (c) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
-      });
+    function esc(value: unknown) {
+      const entities: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;' };
+      return String(value).replace(/[&<>]/g, (c) => entities[c]);
     }
     function scroll() {
       out.scrollTop = out.scrollHeight;
     }
 
-    function opt(num, label, cls) {
+    function opt(num: string, label: string, cls?: string) {
       return (
         '<span class="opt' +
         (cls ? ' ' + cls : '') +
@@ -124,17 +144,17 @@ const GAMES: Record<string, { n: string; url: string }> = {
       scroll();
     }
 
-    function nav(destination) {
+    function nav(destination: string) {
       if (!destination.startsWith('#')) {
         window.location.assign(destination);
         return;
       }
-      var el = document.querySelector(destination);
+      const el = document.querySelector(destination);
       if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 70, behavior: 'smooth' });
     }
 
-    function exec(raw) {
-      var cmd = raw.trim().toLowerCase();
+    function exec(raw: string) {
+      const cmd = raw.trim().toLowerCase();
       if (cmd !== '') row('<span class="cli-ps">$</span> ' + esc(raw), 'echo');
       if (cmd === '') {
         scroll();
@@ -169,7 +189,7 @@ const GAMES: Record<string, { n: string; url: string }> = {
           renderMain();
           return;
         }
-        var g = GAMES[cmd];
+        const g = GAMES[cmd];
         if (g) {
           row('<span class="c">' + esc(t('playing')) + ' · ' + esc(g.n) + '</span>');
           window.open(g.url, '_blank', 'noopener');
@@ -196,34 +216,37 @@ const GAMES: Record<string, { n: string; url: string }> = {
       scroll();
     }
 
-    input.addEventListener('keydown', function (e) {
+    input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        var v = input.value;
+        const value = input.value;
         input.value = '';
-        exec(v);
+        exec(value);
       }
     });
-    out.addEventListener('click', function (e) {
-      var o = e.target.closest('.opt');
-      if (!o) return;
-      input.value = o.getAttribute('data-key');
-      var v = input.value;
+    out.addEventListener('click', (e) => {
+      const target = e.target;
+      const option = target instanceof Element ? target.closest('.opt') : null;
+      if (!option) return;
+      input.value = option.getAttribute('data-key') ?? '';
+      const value = input.value;
       input.value = '';
-      exec(v);
+      exec(value);
       input.focus();
     });
-    out.addEventListener('keydown', function (e) {
+    out.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter' && e.key !== ' ') return;
-      var o = e.target.closest('.opt');
-      if (!o) return;
+      const target = e.target;
+      const option = target instanceof Element ? target.closest('.opt') : null;
+      if (!option) return;
       e.preventDefault();
       input.value = '';
-      exec(o.getAttribute('data-key'));
+      exec(option.getAttribute('data-key') ?? '');
       input.focus();
     });
-    body.addEventListener('click', function (e) {
-      if (!e.target.closest('.opt')) input.focus();
+    body.addEventListener('click', (e) => {
+      const target = e.target;
+      if (!(target instanceof Element) || !target.closest('.opt')) input.focus();
     });
 
     renderMain();

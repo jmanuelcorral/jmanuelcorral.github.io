@@ -18,8 +18,11 @@ export default defineConfig({
         locales: { es: 'es', en: 'en' },
       },
       // Static legacy-redirect stubs and llms.txt/llms-full.txt are not
-      // real content pages — keep them out of the sitemap.
+      // real content pages — keep them out of the sitemap. The bare root is
+      // too: it is a noindex redirect stub, so listing it would ask crawlers
+      // to index exactly what its robots meta tells them to skip.
       filter: (page) =>
+        new URL(page).pathname !== '/' &&
         !/\/llms(-full)?\.txt$/.test(page) &&
         ![
           '/Hello-World/',
