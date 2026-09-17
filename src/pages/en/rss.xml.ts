@@ -1,15 +1,17 @@
 // Per-locale RSS feed (Rusty-owned platform route). Draft posts are always
 // excluded regardless of environment — an RSS feed is published content,
-// not a preview surface.
+// not a preview surface, so this gates on the shared `isPublished`
+// predicate rather than re-deriving the rule locally.
 import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
 import { getCollection } from 'astro:content';
+import { isPublished } from '../../lib/content';
 import { blogPostPath } from '../../lib/i18n';
 
 export async function GET(context: APIContext) {
   const posts = await getCollection(
     'blog',
-    (entry) => entry.data.lang === 'en' && !entry.data.draft,
+    (entry) => entry.data.lang === 'en' && isPublished(entry),
   );
 
   posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());

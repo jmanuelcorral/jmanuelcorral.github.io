@@ -7,19 +7,37 @@ import type { Locale } from './i18n';
 
 export type BlogPost = CollectionEntry<'blog'>;
 
-/** All non-draft posts for a locale, newest first. */
+/**
+ * The single definition of "published": a post that is not a draft. Every
+ * published surface (RSS, llms.txt, and anything that feeds the sitemap)
+ * must gate on this so a draft can never leak through one route while a
+ * different route hides it.
+ */
+export function isPublished(entry: BlogPost): boolean {
+  return !entry.data.draft;
+}
+
+/**
+ * Whether the current build should render a post at all. Production builds
+ * render published posts only; `astro dev` also renders drafts so an
+ * unfinished post can be reviewed locally before it is published.
+ */
+export function isRenderable(entry: BlogPost): boolean {
+  return import.meta.env.PROD ? isPublished(entry) : true;
+}
+
+/** All published posts for a locale, newest first. */
 export async function getPostsByLocale(locale: Locale): Promise<BlogPost[]> {
-  const posts = await getCollection('blog', (entry) => {
-    return entry.data.lang === locale && (import.meta.env.PROD ? !entry.data.draft : true);
-  });
+  const posts = await getCollection(
+    'blog',
+    (entry) => entry.data.lang === locale && isRenderable(entry),
+  );
   return posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 }
 
-/** Every non-draft post across all locales. */
+/** Every published post across all locales. */
 export async function getAllPosts(): Promise<BlogPost[]> {
-  const posts = await getCollection('blog', (entry) => {
-    return import.meta.env.PROD ? !entry.data.draft : true;
-  });
+  const posts = await getCollection('blog', (entry) => isRenderable(entry));
   return posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 }
 

@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "validate:content": "node scripts/validate-content.mjs",
     "search:index": "echo 'Pagefind is not wired in yet - run `npx pagefind --site dist` after `npm run build` once Basher confirms a search UI slot, then commit the generated dist/pagefind assets are NOT committed (regen per deploy).' "
   },
   "dependencies": {
