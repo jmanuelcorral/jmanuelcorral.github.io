@@ -282,6 +282,45 @@ a.post:hover h4 {
   margin-top: 14px;
 }
 
+/* ---- category filter chips ----
+   Shared by PostsSection and LabsSection: the chips are the same control in
+   both places (same tokens, same active state), so the styling lives here
+   once. See src/lib/filterSection.ts for the matching behavior. */
+.filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.fbtn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.fbtn:hover {
+  border-color: var(--line-2);
+  color: var(--fg);
+}
+.fbtn.on {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+  color: var(--accent);
+}
+
+/* Header action row: the filter chips beside the "view all" link. */
+.posts-actions,
+.labs-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 /* ---- a11y utilities (not visual — no on-screen equivalent to preserve) ---- */
 .visually-hidden {
   position: absolute;

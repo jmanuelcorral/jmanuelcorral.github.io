@@ -80,63 +80,12 @@ const filters = postCategoryFilters(
 </section>
 
 <script>
-  // Post filters — same behavior as the lab filters: the clicked button
-  // becomes the active one (class and aria-pressed together) and cards that
-  // don't match its category are hidden.
-  const filterWrap = document.getElementById('post-filters');
-  const postGrid = document.getElementById('post-grid');
+  import { initFilterSection } from '../lib/filterSection';
 
-  if (filterWrap && postGrid) {
-    filterWrap.addEventListener('click', (event) => {
-      const target = event.target;
-      const button = target instanceof Element ? target.closest('button[data-f]') : null;
-      if (!(button instanceof HTMLButtonElement)) return;
-      const category = button.dataset.f;
-
-      filterWrap.querySelectorAll<HTMLButtonElement>('.fbtn').forEach((filter) => {
-        const active = filter.dataset.f === category;
-        filter.classList.toggle('on', active);
-        filter.setAttribute('aria-pressed', String(active));
-      });
-      postGrid.querySelectorAll<HTMLElement>('.post').forEach((card) => {
-        card.classList.toggle('hidden', category !== 'all' && card.dataset.cat !== category);
-      });
-    });
-  }
+  initFilterSection('post-filters', 'post-grid');
 </script>
 
 <style>
-  .filters {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .fbtn {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--muted);
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 7px;
-    padding: 6px 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .fbtn:hover {
-    border-color: var(--line-2);
-    color: var(--fg);
-  }
-  .fbtn.on {
-    background: var(--accent-soft);
-    border-color: color-mix(in srgb, var(--accent) 34%, transparent);
-    color: var(--accent);
-  }
-  .posts-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
   #posts :global(.post .kind) {
     color: var(--indigo);
   }

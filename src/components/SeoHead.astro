@@ -4,6 +4,7 @@
 // pass in the current locale/path plus the set of locales this exact
 // document is available in, so callers never have to hand-roll hreflang.
 import { LOCALE_HREFLANG, DEFAULT_LOCALE, type Locale } from '../lib/i18n';
+import { canonicalUrl, siteUrl } from '../lib/seo';
 import { buildStructuredData, serializeJsonLd, type StructuredDataInput } from '../lib/structuredData';
 
 interface Alternate {
@@ -18,6 +19,10 @@ interface Props {
   path: string; // absolute path of the current page, e.g. "/es/blog/hola-mundo/"
   alternates?: Alternate[];
   ogType?: 'website' | 'article';
+  /** Absolute-path share image for og:image / twitter:image. Defaults to the
+   * site's own generated card (scripts/build-og-image.mjs); pass a custom
+   * path to override it on a specific page. */
+  ogImage?: string;
   /** Set false when `title` is already a complete, brand-inclusive title
    * (e.g. the home page's title, copied verbatim from the design export)
    * that shouldn't get the " · jmanuelcorral" suffix appended. */
@@ -35,12 +40,14 @@ const {
   path,
   alternates = [],
   ogType = 'website',
+  ogImage = '/og-image.png',
   suffixSiteName = true,
   structuredData,
 } = Astro.props;
 
-const siteUrl = Astro.site ?? new URL(Astro.url.origin);
-const canonicalUrl = new URL(path, siteUrl).toString();
+const site = siteUrl(Astro.site);
+const canonical = canonicalUrl(site, path);
+const shareImageUrl = canonicalUrl(site, ogImage);
 
 // x-default points at the default-locale version when available, otherwise
 // falls back to whichever alternate exists first.
@@ -49,21 +56,21 @@ const xDefaultAlternate =
 
 const pageTitle = suffixSiteName ? `${title} · jmanuelcorral` : title;
 
-const jsonLd = structuredData ? buildStructuredData(structuredData, locale, canonicalUrl) : null;
+const jsonLd = structuredData ? buildStructuredData(structuredData, locale, canonical) : null;
 ---
 
 <title>{pageTitle}</title>
 <meta name="description" content={description} />
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
-<link rel="canonical" href={canonicalUrl} />
+<link rel="canonical" href={canonical} />
 
 {
   alternates.map((alt) => (
     <link
       rel="alternate"
       hreflang={LOCALE_HREFLANG[alt.locale]}
-      href={new URL(alt.path, siteUrl).toString()}
+      href={new URL(alt.path, site).toString()}
     />
   ))
 }
@@ -72,7 +79,7 @@ const jsonLd = structuredData ? buildStructuredData(structuredData, locale, cano
     <link
       rel="alternate"
       hreflang="x-default"
-      href={new URL(xDefaultAlternate.path, siteUrl).toString()}
+      href={new URL(xDefaultAlternate.path, site).toString()}
     />
   )
 }
@@ -80,10 +87,14 @@ const jsonLd = structuredData ? buildStructuredData(structuredData, locale, cano
 <meta property="og:type" content={ogType} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:url" content={canonicalUrl} />
+<meta property="og:url" content={canonical} />
 <meta property="og:locale" content={locale === 'es' ? 'es_ES' : 'en_US'} />
-<meta name="twitter:card" content="summary" />
+<meta property="og:image" content={shareImageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={shareImageUrl} />
 
 {jsonLd && <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} is:inline />}

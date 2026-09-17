@@ -30,8 +30,8 @@ const filters = experimentCategoryFilters(
       <Heading class="sec-title">{copy.labs.title}</Heading>
       <p class="sec-sub">{copy.labs.sub}</p>
     </div>
-    <div class="labs-actions" id="lab-filters">
-      <div class="filters" role="group" aria-label={copy.labs.eyebrow}>
+    <div class="labs-actions">
+      <div class="filters" id="lab-filters" role="group" aria-label={copy.labs.eyebrow}>
         <button type="button" class="fbtn on" data-f="all" aria-pressed="true" aria-controls="lab-grid">
           {copy.labs.fAll}
         </button>
@@ -68,98 +68,16 @@ const filters = experimentCategoryFilters(
 </section>
 
 <script>
-  const filterWrap = document.getElementById('lab-filters');
-  const labGrid = document.getElementById('lab-grid');
+  import { initFilterSection } from '../lib/filterSection';
 
-  if (filterWrap && labGrid) {
-    filterWrap.addEventListener('click', (event) => {
-      const target = event.target;
-      const button = target instanceof Element ? target.closest('button[data-f]') : null;
-      if (!(button instanceof HTMLButtonElement)) return;
-      const category = button.dataset.f;
-
-      filterWrap.querySelectorAll<HTMLButtonElement>('.fbtn').forEach((filter) => {
-        const active = filter.dataset.f === category;
-        filter.classList.toggle('on', active);
-        filter.setAttribute('aria-pressed', String(active));
-      });
-      labGrid.querySelectorAll<HTMLElement>('.post').forEach((card) => {
-        card.classList.toggle('hidden', category !== 'all' && card.dataset.cat !== category);
-      });
-    });
-  }
+  initFilterSection('lab-filters', 'lab-grid');
 </script>
 
 <style>
-  .filters {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .fbtn {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--muted);
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 7px;
-    padding: 6px 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .fbtn:hover {
-    border-color: var(--line-2);
-    color: var(--fg);
-  }
-  .labs-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
   #labs .post .kind {
     color: var(--copper);
   }
-  .fbtn.on {
-    background: var(--accent-soft);
-    border-color: color-mix(in srgb, var(--accent) 34%, transparent);
-    color: var(--accent);
-  }
   .labs-actions .btn {
     line-height: 1.5;
-  }
-  .post.stub {
-    border-style: dashed;
-    background: transparent;
-  }
-  .post.stub h4 {
-    color: var(--muted);
-  }
-  .post.stub .ph {
-    height: 9px;
-    border-radius: 4px;
-    background: var(--surface-2);
-    margin-bottom: 8px;
-  }
-  .post.stub .ph.w70 {
-    width: 70%;
-  }
-  .post.stub .ph.w45 {
-    width: 45%;
-  }
-  .seed-note {
-    font-size: 12px;
-    color: var(--faint);
-    margin-top: 20px;
-    font-family: var(--font-mono);
-    display: flex;
-    align-items: center;
-    gap: 9px;
-  }
-  .seed-note::before {
-    content: '';
-    width: 16px;
-    height: 1px;
-    background: var(--line-2);
   }
 </style>
