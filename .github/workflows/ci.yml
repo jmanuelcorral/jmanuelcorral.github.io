@@ -1,0 +1,53 @@
+name: CI
+
+# Quality gate for the Astro site. Deploy.yml only builds (withastro/action),
+# so type errors and content-parity breaks used to reach `master` unnoticed.
+# This workflow runs the checks the deploy path skips, on every PR and on
+# anything pushed to master. Kept separate from deploy.yml so a failing
+# check never entangles the Pages deployment permissions.
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'astro.config.mjs'
+      - 'tsconfig.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ci.yml'
+
+permissions:
+  contents: read
+
+# A newer push on the same ref makes an in-flight run obsolete.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check (astro check)
+        run: npm run check
+
+      - name: Validate bilingual content parity
+        run: npm run validate:content
+
+      - name: Build static site
+        run: npm run build

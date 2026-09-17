@@ -11,7 +11,7 @@
 //  2. Section links (#portfolio/#posts/#labs) are anchors on the home
 //     page; from any other page they are prefixed with the locale's home
 //     path so they still resolve.
-import { localePath, type Locale } from '../lib/i18n';
+import { localePath, t, type Locale } from '../lib/i18n';
 import { HOME_COPY } from '../lib/homeCopy';
 
 interface Props {
@@ -100,6 +100,20 @@ const langTitle = otherLocalePath ? undefined : otherCopy.lang.aria;
       <a class="cta" href="https://github.com/jmanuelcorral" target="_blank" rel="noopener">GitHub</a>
       <a class="lang-btn" href={langHref} aria-label={copy.lang.aria} title={langTitle}>{copy.lang.next}</a>
       <button class="theme-btn" id="theme" aria-label={copy.nav.themeAria}>◐</button>
+      <details class="mobile-menu">
+        <summary aria-label={t(locale, 'mobileMenuAria')}>
+          <span>{t(locale, 'navMenu')}</span>
+          <span class="mobile-menu__chevron" aria-hidden="true"></span>
+        </summary>
+        <div class="mobile-menu__panel" role="group" aria-label={t(locale, 'mobileMenuAria')}>
+          <a href={sectionHref('#portfolio')}>{copy.nav.portfolio}</a>
+          <a href={sectionHref('#posts')}>{copy.nav.posts}</a>
+          <a href={sectionHref('#labs')}>{copy.nav.labs}</a>
+          <a href="/resume-short.html">{copy.nav.cvStandard}</a>
+          <a href="/resume-extended.html">{copy.nav.cvExtended}</a>
+          <a class="lang-btn" href={langHref} aria-label={copy.lang.aria} title={langTitle}>{copy.lang.next}</a>
+        </div>
+      </details>
     </div>
   </div>
 </nav>
@@ -120,28 +134,47 @@ const langTitle = otherLocalePath ? undefined : otherCopy.lang.aria;
   })();
 
   // Native disclosure handles mouse, touch, and keyboard activation. These
-  // small enhancements close it when navigation focus moves elsewhere.
+  // small enhancements close every nav menu (the desktop CV dropdown and
+  // the small-screen menu) when focus or a click moves outside it, and
+  // keep at most one of them open at a time.
   (function () {
-    const menu = document.querySelector<HTMLDetailsElement>('.cv-menu');
-    if (!menu) return;
-    const summary = menu.querySelector<HTMLElement>('summary');
+    const menus = Array.from(document.querySelectorAll<HTMLDetailsElement>('nav details'));
+    if (menus.length === 0) return;
 
-    menu.addEventListener('keydown', function (event) {
-      if (event.key !== 'Escape') return;
-      event.preventDefault();
-      menu.open = false;
-      summary?.focus();
-    });
-    document.addEventListener('focusin', function (event) {
-      if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
-    });
-    menu.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', function () {
+    menus.forEach(function (menu) {
+      const summary = menu.querySelector<HTMLElement>('summary');
+
+      menu.addEventListener('toggle', function () {
+        if (!menu.open) return;
+        menus.forEach(function (other) {
+          if (other !== menu) other.open = false;
+        });
+      });
+      menu.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        event.preventDefault();
         menu.open = false;
+        summary?.focus();
+      });
+      menu.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          menu.open = false;
+        });
       });
     });
+
+    function closeAllExcept(target: EventTarget | null) {
+      if (!(target instanceof Node)) return;
+      menus.forEach(function (menu) {
+        if (!menu.contains(target)) menu.open = false;
+      });
+    }
+
+    document.addEventListener('focusin', function (event) {
+      closeAllExcept(event.target);
+    });
     document.addEventListener('click', function (event) {
-      if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+      closeAllExcept(event.target);
     });
   })();
 
@@ -439,6 +472,99 @@ const langTitle = otherLocalePath ? undefined : otherCopy.lang.aria;
     border-color: var(--accent);
     color: var(--accent);
   }
+  /* Small-screen menu. The `newdesign/` export hides the inline nav links
+     below 640px with nothing in their place, which also hid the language
+     switcher — on a bilingual site that left no way to change language or
+     reach a section on mobile. This disclosure restores those destinations
+     using the nav's own dropdown pattern (the CV submenu's tokens) instead
+     of a new visual language. Hidden on desktop, where the inline links
+     are already visible. */
+  .mobile-menu {
+    display: none;
+    position: relative;
+  }
+  .mobile-menu > summary {
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--line-2);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      color 0.15s,
+      background 0.15s,
+      border-color 0.15s;
+  }
+  .mobile-menu > summary::-webkit-details-marker {
+    display: none;
+  }
+  .mobile-menu > summary:hover,
+  .mobile-menu[open] > summary {
+    color: var(--fg);
+    background: var(--surface-2);
+    border-color: var(--accent);
+  }
+  .mobile-menu > summary:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .mobile-menu__chevron {
+    width: 5px;
+    height: 5px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.15s ease;
+  }
+  .mobile-menu[open] .mobile-menu__chevron {
+    transform: translateY(2px) rotate(225deg);
+  }
+  .mobile-menu__panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 60;
+    min-width: 196px;
+    padding: 6px;
+    display: grid;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+  }
+  :global(html[data-theme='light']) .mobile-menu__panel {
+    box-shadow: 0 14px 36px rgba(15, 109, 99, 0.13);
+  }
+  .mobile-menu__panel a {
+    display: block;
+    white-space: nowrap;
+    padding: 9px 10px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    border-radius: 7px;
+    transition:
+      color 0.15s,
+      background 0.15s;
+  }
+  .mobile-menu__panel a:hover {
+    color: var(--fg);
+    background: var(--surface-2);
+  }
+  .mobile-menu__panel a.lang-btn {
+    display: inline-flex;
+    width: max-content;
+    margin-top: 4px;
+  }
   @media (max-width: 640px) {
     .nav-in {
       padding-inline: 16px;
@@ -447,9 +573,11 @@ const langTitle = otherLocalePath ? undefined : otherCopy.lang.aria;
     .nav-links > a:not(.cta) {
       display: none;
     }
-    .cv-submenu {
-      right: 0;
-      left: auto;
+    .cv-menu {
+      display: none;
+    }
+    .mobile-menu {
+      display: block;
     }
   }
   .cta {
