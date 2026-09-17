@@ -20,7 +20,7 @@ email, `mailto:` ni PDFs de CV.
 | P0-4 | Unificar el predicado "publicado" | Hecho |
 | P1 | Taxonomía, portfolio y URL base como datos | Hecho (rama `feat/content-as-data`) |
 | P2 | Deduplicación de CSS/JS, código muerto, accesibilidad de filtros | Hecho (rama `refactor/dedup-and-a11y`) |
-| P3 | Cruft de Squad, búsqueda, correcciones a `AGENTS.md` | Pendiente |
+| P3 | Cruft de Squad, búsqueda, correcciones a `AGENTS.md` | Hecho (rama `chore/p3-cleanup`) |
 
 ---
 
@@ -367,23 +367,52 @@ sitemap, así que el `filter` de `astro.config.mjs` empieza ahora descartando
 
 ---
 
-## P3 — Limpieza de automatización y documentación
+## P3 — Ejecutado en la rama `chore/p3-cleanup`
 
-1. **Cruft de Squad.** Cuatro workflows que no aportan a este sitio:
-   `.github/workflows/squad-heartbeat.yml`, `squad-issue-assign.yml`,
-   `squad-triage.yml`, `sync-squad-labels.yml`, más el directorio `.squad/`
-   (plantillas de skills de otra herramienta). Borrarlos y podar `.squad/`.
-2. **Decidir `search:index`.** `package.json:11` es un placeholder que no indexa
-   nada. O se conecta Pagefind de verdad (generación en build, assets no commiteados)
-   o se quita el script; dejarlo a medias confunde.
-3. **Corregir `AGENTS.md`.** Tres afirmaciones ya no son ciertas:
-   - §2 dice "5 Spanish + 5 English"; son **10 + 10**.
-   - §2 no menciona las rutas `/es/blog/`, `/en/blog/`, `/es/experiments/`.
-   - §4 dice "`/` → 302 a `/es/`"; en realidad es *meta refresh* + `noindex`.
-   - §6 afirma que el blog no tiene imágenes de post; existe
-     `public/epoaura-pantalla.mp4` (380K) incrustado con `<video>` en los posts de
-     epoaura. Actualizar la regla a "sin imágenes heredadas de Jekyll; el vídeo
-     embebido existente es consciente".
+### P3-1. Cruft de Squad fuera
+
+Borrados los cuatro workflows (`squad-heartbeat.yml`, `squad-issue-assign.yml`,
+`squad-triage.yml`, `sync-squad-labels.yml`) y el directorio `.squad/` completo
+(134 archivos: charters e historiales de agentes, casting, ceremonias, routing,
+plantillas de skills de otra herramienta).
+
+Antes de borrar se verificó que **ninguno** de los dos workflows que sí importan
+(`ci.yml`, `deploy.yml`) referencia nada de Squad: los cuatro eliminados se
+disparan por eventos de `issues`/`labels` y leían `.squad/team.md`, así que no
+tocaban el build ni el deploy del sitio. Efecto colateral buscado: el
+*Squad Heartbeat (Ralph)* deja de consumir minutos de CI en cada PR (en el PR #2
+aún corrió 48s).
+
+Las referencias a `.squad/` que quedaban en `.copilot/skills/` se dejan como
+están: §12 de `AGENTS.md` ya marcaba esos skills como convención de Squad y no
+aplicable a este sitio.
+
+### P3-2. `search:index` eliminado
+
+El script era un `echo` que no indexaba nada, sin UI de búsqueda donde apuntar (no
+hay ningún componente de búsqueda en `src/`) y sin Pagefind entre las
+dependencias. Se quita de `package.json` en lugar de dejarlo a medias: un script
+que no hace lo que su nombre dice es peor que la ausencia del script.
+
+Conexión real de Pagefind queda como trabajo futuro y consciente si algún día hay
+un hueco de UI: generación en build y assets **no** commiteados.
+
+### P3-3. `AGENTS.md` corregido
+
+A las cuatro inexactitudes previstas se sumaron tres más que aparecieron al
+repasar el archivo (y una que el propio P2 acababa de caducar):
+
+| Sección | Decía | Ahora |
+| --- | --- | --- |
+| §2 | "5 Spanish + 5 paired" | **10 + 10** |
+| §2 | rutas sin los listings | `[locale]/[listing].astro` → `/es/blog/`, `/en/blog/`, `/es/experiments/`, `/en/experiments/` |
+| §2 | `homeCopy.ts` a secas | compositor sobre `src/copy/`, y se documenta `src/copy/`, `feed.ts` y `filterSection.ts` |
+| §2 | solo `deploy.yml` | también `ci.yml` (barrera de calidad de P0-2) |
+| §2 | "No blog post images live here — see §5" | el vídeo de epoaura sí vive en `public/`; la regla es §6 |
+| §3 | "el script `search:index` es un placeholder intencional" | eliminado en P3-2; la lista de comandos pasa a incluir `validate:content` y `build-og-image.mjs` |
+| §4 | "`/` → 302 a `/es/`" | *meta refresh* `content="0;url=/es/"` + `noindex` + canonical, y fuera del sitemap |
+| §6 | "el blog no tiene imágenes de post" | sin imágenes heredadas de Jekyll; `public/epoaura-pantalla.mp4` (~380K) con `<video>` en los dos posts de epoaura es deliberado |
+| §12 | "promover `pr-screenshots` desde `.squad/templates/skills/`" | ese directorio ya no existe; si se quiere esa verificación, se autoriza de cero en una ubicación oficial |
 
 ---
 
@@ -404,6 +433,10 @@ node scripts/build-og-image.mjs  # regenera public/og-image.png (1200x630)
 Comprobaciones manuales recomendadas tras cambios de UI: menú móvil a 360/414/640 px
 (apertura, cierre con Escape, cierre del otro desplegable, selector de idioma), y
 diff visual contra `newdesign/index.html` para tokens y breakpoints.
+
+**El plan está cerrado.** P0, P1, P2 y P3 ejecutados, verificados y desplegados;
+no queda ningún item pendiente. Lo que deliberadamente no entró se lista en
+«Fuera de alcance».
 
 ## Hallazgos positivos (no requieren acción)
 
