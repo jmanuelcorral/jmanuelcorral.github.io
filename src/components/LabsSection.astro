@@ -5,7 +5,7 @@ import type { Locale } from '../lib/i18n';
 import { HOME_COPY } from '../lib/homeCopy';
 import { getPostsByLocale, formatShortDate } from '../lib/content';
 import { blogPostPath, localePath, t } from '../lib/i18n';
-import { taxonomyFor } from '../lib/postTaxonomy';
+import { experimentCategoryFilters } from '../lib/postTaxonomy';
 
 interface Props {
   locale: Locale;
@@ -17,6 +17,10 @@ const Heading = fullListing ? 'h1' : 'div';
 const experiments = (await getPostsByLocale(locale))
   .filter((post) => post.data.tags.includes('experiment'))
   .slice(0, fullListing ? undefined : 3);
+const filters = experimentCategoryFilters(
+  experiments.map((post) => post.data.experimentCategory),
+  locale,
+);
 ---
 
 <section id="labs" class="sec-pad">
@@ -31,15 +35,17 @@ const experiments = (await getPostsByLocale(locale))
         <button type="button" class="fbtn on" data-f="all" aria-pressed="true" aria-controls="lab-grid">
           {copy.labs.fAll}
         </button>
-        <button type="button" class="fbtn" data-f="inference" aria-pressed="false" aria-controls="lab-grid">
-          {copy.labs.fInference}
-        </button>
-        <button type="button" class="fbtn" data-f="training" aria-pressed="false" aria-controls="lab-grid">
-          {copy.labs.fTraining}
-        </button>
-        <button type="button" class="fbtn" data-f="rag" aria-pressed="false" aria-controls="lab-grid">
-          {copy.labs.fRag}
-        </button>
+        {filters.map((filter) => (
+          <button
+            type="button"
+            class="fbtn"
+            data-f={filter.value}
+            aria-pressed="false"
+            aria-controls="lab-grid"
+          >
+            {filter.label}
+          </button>
+        ))}
       </div>
       <a class="btn btn-ghost" href={fullListing ? `${localePath(locale)}#labs` : localePath(locale, 'experiments/')}>
         {fullListing ? `← ${t(locale, 'navHome')}` : copy.labs.all}
@@ -49,17 +55,14 @@ const experiments = (await getPostsByLocale(locale))
 
   <div class="grid g-3" id="lab-grid">
     {
-      experiments.map((post) => {
-        const taxonomy = taxonomyFor(post.data.translationKey);
-        return (
-          <a class="post" href={blogPostPath(locale, post.data.slug)} data-cat={taxonomy.experimentCategory}>
-            <div class="kind">{taxonomy.kind[locale]}</div>
-            <h4>{post.data.title}</h4>
-            <p>{post.data.description}</p>
-            <div class="date">{formatShortDate(post.data.pubDate, locale)}</div>
-          </a>
-        );
-      })
+      experiments.map((post) => (
+        <a class="post" href={blogPostPath(locale, post.data.slug)} data-cat={post.data.experimentCategory}>
+          <div class="kind">{post.data.kind}</div>
+          <h4>{post.data.title}</h4>
+          <p>{post.data.description}</p>
+          <div class="date">{formatShortDate(post.data.pubDate, locale)}</div>
+        </a>
+      ))
     }
   </div>
 </section>

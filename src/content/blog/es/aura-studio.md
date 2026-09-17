@@ -6,6 +6,8 @@ translationKey: 'aura-studio'
 slug: 'aura-studio-un-domingo-de-rgb-en-linux'
 pubDate: '2026-09-14T14:00:00+02:00'
 tags: ['linux', 'open-source', 'tauri', 'rust', 'svelte', 'desktop', 'asus']
+category: 'devops'
+kind: 'Post · Linux'
 draft: false
 ---
 

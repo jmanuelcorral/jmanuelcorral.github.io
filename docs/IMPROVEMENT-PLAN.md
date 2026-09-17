@@ -18,7 +18,7 @@ email, `mailto:` ni PDFs de CV.
 | P0-2 | CI que ejecuta `check` + validador + `build` en cada PR | Hecho |
 | P0-3 | Validador de contenido bilingüe | Hecho |
 | P0-4 | Unificar el predicado "publicado" | Hecho |
-| P1 | Taxonomía, portfolio y URL base como datos | Pendiente |
+| P1 | Taxonomía, portfolio y URL base como datos | Hecho (rama `feat/content-as-data`) |
 | P2 | Deduplicación de CSS/JS, código muerto, accesibilidad de filtros | Pendiente |
 | P3 | Cruft de Squad, búsqueda, correcciones a `AGENTS.md` | Pendiente |
 
@@ -130,60 +130,141 @@ idéntica a la anterior; solo cambia que ahora hay un único sitio donde modific
 
 ---
 
-## P1 — Datos fuera del código
+## P1 — Ejecutado en la rama `feat/content-as-data`
 
 El patrón de fondo de la revisión: **el contenido descrito vive en módulos TS, no en
 la colección**. Cada post nuevo obliga a tocar tres o cuatro archivos de plataforma, y
-si se olvida uno, el fallo es silencioso.
+si se olvida uno, el fallo es silencioso. Esta rama saca ese contenido al frontmatter
+y a `src/data/`, de modo que añadir un post o un repo deja de exigir editar
+plataforma.
 
-1. **Taxonomía al frontmatter.** Sustituir la tabla
-   `POST_TAXONOMY` (`src/lib/postTaxonomy.ts:24-46`, 9 claves escritas a mano, con
-   `DEFAULT_POST_TAXONOMY` en `:48` y `taxonomyFor()` en `:53`) por campos reales en
-   cada post: `category` (enum `cloud | devops | ai`), `kindEs` / `kindEn`, y
-   `experimentCategory` opcional (`inference | training | rag`). Al migrar cada campo,
-   el schema de `src/content.config.ts` pasa a validar lo que hoy es una convención
-   social, y el validador P0-3 puede exigir su presencia.
-2. **Botones de filtro derivados.** `PostsSection.astro:39-46` y
-   `LabsSection.astro:29-42` enmarcan a mano "All / Cloud / DevOps" y
-   "All / Inference / Training / RAG". Generar los botones a partir de las
-   categorías realmente presentes: un post con una categoría nueva aparece filtrable
-   sin editar componentes.
-3. **`src/data/portfolio.ts`.** Los repos enlazados están repartidos por el
-   componente: la lista de destacados en `PortfolioSection.astro:17-25` y luego URLs
-   repetidas 2-3 veces por proyecto en `:36,50,63,64,72,83,84,94,105,123`. Un array
-   con una URL por entrada elimina la duplicación y hace posible ordenar/filtrar.
-4. **Un único `siteUrl()` en `seo.ts`.** El fallback
-   `?? new URL('https://josecorral.dev')` está copiado en cinco archivos:
-   `src/pages/[legacy].astro:52`, `src/pages/es/rss.xml.ts:22`,
-   `src/pages/en/rss.xml.ts:22`, `src/pages/llms.txt.ts:19`,
-   `src/pages/llms-full.txt.ts:39`. Cambiar de dominio hoy es un buscador y reemplazo
-   con cinco puntos de fallo.
-5. **URLs de los juegos como datos.** `src/components/Terminal.astro:41-44` fija
-   `https://josecorral.dev/barrelshift/` y `/pinball/` con el dominio escrito dentro
-   del componente, así que en `dev`/`preview` apuntan a producción. Deben derivarse
-   del `siteUrl()` común.
+### P1-1. Taxonomía al frontmatter
+
+`src/content.config.ts` declara ahora `category` (enum `cloud | devops | ai`), `kind`
+(obligatorio) y `experimentCategory` opcional (`inference | training | rag`), más un
+`refine` que exige `experimentCategory` a todo post etiquetado `experiment`
+(«posts tagged 'experiment' must declare an experimentCategory so the lab filters list
+them»). Lo que era convención social es validación de build: un post nuevo sin
+`category` o `kind` no compila.
+
+**Desviación del plan.** El plan preveía `kindEs` / `kindEn`. Se implementó como un
+**único campo `kind` escrito en el idioma del propio archivo**, igual que `title` y
+`description`: cada archivo ya sabe qué idioma es el suyo, así que duplicar el par en
+los dos archivos solo añade riesgo de deriva. La etiqueta visible sale del propio post.
+
+Migración de los 20 posts (10 es + 10 en) con un script desechable que inserta los
+campos detrás de `tags:`. Mapeo definitivo:
+
+| translationKey | category | `kind` (es / en) | experimentCategory |
+| --- | --- | --- | --- |
+| `aspnet-core-elk` | cloud | Post · Observabilidad / Post · Observability | — |
+| `aura-studio` | devops | Post · Linux / Post · Linux | — |
+| `ddd-entity-validation` | devops | Post · Arquitectura / Post · Architecture | — |
+| `dotnet-code-coverage` | devops | Post · DevOps / Post · DevOps | — |
+| `epoaura` | devops | Post · Blog / Post · Blog | — |
+| `hello-world` | devops | Post · Blog / Post · Blog | — |
+| `kubernetes-windows-10` | cloud | Post · Kubernetes / Post · Kubernetes | — |
+| `halostrix-qwen38-lemonade-sse` | ai | Experimento · Inferencia / Experiment · Inference | `inference` |
+| `halostrix-rocm-training-lab` | ai | Experimento · Entrenamiento / Experiment · Training | `training` |
+| `halostrix-vulkan-vs-rocm` | ai | Experimento · Inferencia / Experiment · Inference | `inference` |
+
+Nota sobre `epoaura`: no estaba en la tabla antigua y se servía con
+`DEFAULT_POST_TAXONOMY` = `devops` / «Post · Blog». Se conservó ese valor exacto para
+no cambiar copy en producción; ahora se puede corregir a «Post · Linux» cambiando una
+línea de su frontmatter.
+
+`src/lib/postTaxonomy.ts` queda reducido a vocabulario y derivación: `PostCategory`,
+`ExperimentCategory`, `FilterOption<T>`, `postCategoryFilters()` (`:46`),
+`experimentCategoryFilters()` (`:54`) y las tablas de etiquetas y orden. Ya no conoce
+ningún post concreto: se borraron `POST_TAXONOMY`, `DEFAULT_POST_TAXONOMY` y
+`taxonomyFor()`.
+
+**Las etiquetas de categoría viven en `postTaxonomy.ts`, no en `homeCopy.ts`**, porque
+son propiedad del valor de la categoría (hace falta allí donde se pinta una categoría)
+mientras que `homeCopy.ts` se autodefine copia estática que no es de posts.
+Consecuencia: `labs.fInference` / `fTraining` / `fRag` se eliminaron de `homeCopy.ts`.
+
+### P1-2. Botones de filtro derivados
+
+`PostsSection.astro:24` y `LabsSection.astro:20` derivan los botones de las categorías
+presentes en el slice que renderizan, en el orden fijo del vocabulario. Un post con
+una categoría nueva aparece filtrable sin tocar componentes.
+
+**Cambio visible intencionado:** un filtro que no devuelve nada ya no se ofrece. En la
+home los tres posts destacados son todos `devops`, así que solo aparece
+`Todos / DevOps` (antes `Todos / Cloud / DevOps`); en labs los tres destacados dan
+`Todos / Inferencia / Entrenamiento` y el botón `RAG` desaparece. Los listings
+completos (`/es/blog/`, `/es/experiments/`) siguen mostrando todas las categorías
+presentes.
+
+Al dar `aria-pressed` a los botones de posts hubo que reescribir su script para que la
+clase `on` y el estado ARIA cambien juntos, alineándolo con el patrón de labs
+(`const` + `querySelectorAll<T>`), lo que de paso eliminó los errores de tipos que el
+ES5 con `var` introdujo.
+
+### P1-3. `src/data/portfolio.ts`
+
+Cada repo destacado se declara una sola vez con su URL, idioma, tags, estrellas,
+badge y copy localizada (`FEATURED_REPOS`), más `STARRED_REPOS` (9 entradas) y
+`GITHUB_LINKS` para los enlaces de cabecera. `PortfolioSection.astro` ahora solo
+mapea: fuera la lista local `starred`, fuera las tres tarjetas escritas a mano y
+fuera las URLs repetidas dos o tres veces por proyecto. De `homeCopy.ts` se borraron
+`flag`, `veta` y `cco`; solo quedan las etiquetas compartidas del pie de tarjeta
+(`foot.code`, `foot.docs`) y la cromación de secciones.
+
+### P1-4. Un único `siteUrl()` en `seo.ts`
+
+`siteUrl(site?)` (`src/lib/seo.ts:16`) resuelve el origen canónico y deja el literal
+de respaldo en un solo sitio. Los cinco puntos de fallo
+(`src/pages/[legacy].astro:52`, `src/pages/es/rss.xml.ts:22`,
+`src/pages/en/rss.xml.ts:22`, `src/pages/llms.txt.ts:19`,
+`src/pages/llms-full.txt.ts:39`) ahora llaman a `siteUrl(context.site)`. Efecto
+secundario deseado: `seo.ts` deja de ser código muerto del todo (ver P2-1).
+
+### P1-5. URLs de los juegos como datos
+
+`src/data/games.ts` expone `gameUrl(slug)` construido sobre `siteUrl()`, y
+`Terminal.astro:43-44` lo usa para `barrelshift` y `pinball`. El dominio ya no está
+escrito dentro del componente; el origen resuelto sigue siendo el de `site` en
+`astro.config.mjs`, que es lo correcto porque los juegos se sirven en el mismo origen
+fuera de este repo.
+
+**Verificación de P1.** `npm run check` → 0 errores (quedan los 4 avisos preexistentes
+de `Terminal.astro`), `npm run validate:content` → 20 posts, `npm run build` → 33
+páginas. En `dist`: la home pinta `data-cat="devops"` ×3 y `data-f` solo con
+`all`/`devops`; `/es/blog/` ofrece `all`/`cloud`/`devops`; `/es/experiments/` ofrece
+`all`/`inference`/`training`; las tarjetas de portfolio salen de datos (`openteam`,
+`veta-agents`, `CCOInsights`) con 9 `star-item`; las URLs de juegos salen absolutas
+desde `siteUrl()`. Pruebas negativas del schema: quitar `category` de un post y quitar
+`experimentCategory` de un post etiquetado `experiment` rompen el build con el mensaje
+esperado (ambos archivos restaurados después).
 
 ---
 
 ## P2 — Deduplicación, código muerto y accesibilidad
 
-1. **`src/lib/seo.ts` está entero sin usar.** `getPostAlternates` (`:19`),
-   `getStaticPageAlternates` (`:37`) y `canonicalUrl` (`:42`) no tienen ni un import;
-   `SeoHead.astro:43` construye su propia URL canónica localmente y
-   `PostView.astro:17-25` reimplementa los alternates en línea. Decisión: usar
-   `getPostAlternates` desde `PostView.astro` (preferible, es el código probado y da
-   hreflang consistente) o borrar el módulo.
-2. **Claves muertas de `homeCopy.ts`.** `lab1Kind`, `lab1Title`, `pending`, `seed`
-   (`:42-49` en el tipo, `:143-150` es, `:242-249` en) ya no las consume nadie, y
-   arrastran CSS huérfano: `.post.stub` (`LabsSection.astro:128-146`) y `.seed-note`
-   (`:147-161`). Borrar claves y CSS juntos.
+1. **`src/lib/seo.ts` ya no está entero sin usar, pero sigue a medias.** Desde P1
+   `siteUrl()` (`:16`) tiene consumidores reales: los dos RSS, los dos `llms*.txt`, el
+   redirect legacy y, vía `src/data/games.ts`, el terminal. Siguen sin un solo import
+   `getPostAlternates` (`:31`), `getStaticPageAlternates` (`:49`) y
+   `canonicalUrl` (`:54`): `SeoHead.astro:43` construye su propia URL canónica
+   localmente y `PostView.astro:17-25` reimplementa los alternates en línea.
+   Decisión pendiente: usar `getPostAlternates` desde `PostView.astro` (preferible, es
+   el código probado y da hreflang consistente) o borrar esas tres funciones.
+2. **Claves muertas de `homeCopy.ts`.** P1 ya sacó `flag`, `veta` y `cco` (a
+   `src/data/portfolio.ts`) y `labs.fInference` / `fTraining` / `fRag` (a las
+   etiquetas de `postTaxonomy.ts`). Quedan `lab1Kind`, `lab1Title`, `pending`, `seed`
+   sin ningún consumidor y arrastran CSS huérfano: `.post.stub`
+   (`LabsSection.astro:128-146`) y `.seed-note` (`:147-161`). Borrar claves y CSS
+   juntos.
 3. **CSS de filtros duplicado.** `.filters` / `.fbtn` / `:hover` / `.on` están
    copiados literalmente en `PostsSection.astro:108-132` y `LabsSection.astro:91-124`.
    Subirlos a `src/styles/global.css`.
-4. **Un solo script de filtros accesible.** Los dos scripts divergieron: el de posts
-   es ES5 con `var` (`PostsSection.astro:80-99`) y sus botones no llevan `type`,
-   `aria-pressed` ni `aria-controls`; el de labs sí (`LabsSection.astro:31-41,68-86`).
-   Unificar en un helper accesible (patrón del de labs) y usarlo en ambas secciones.
+4. **Un solo script de filtros accesible.** P1 ya alineó el de posts con el patrón de
+   labs (`const` en vez de `var`, `querySelectorAll<T>`, y botones con `type`,
+   `aria-pressed` y `aria-controls`), así que la divergencia de accesibilidad
+   desapareció. Lo que queda es la duplicación de la lógica: extraer un helper común
+   (`initFilterSection(filterId, gridId)`) que usen ambas secciones.
 5. **Partir `homeCopy.ts` por dominio.** ~300 líneas de copia es/en mezclando nav,
    hero, CLI y secciones; separar en `nav.ts` / `hero.ts` / `cli.ts` / `sections.ts`
    para que un cambio de copy no mueva todo el archivo.

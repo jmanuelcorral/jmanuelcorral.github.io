@@ -6,6 +6,18 @@
 import { LOCALES, blogPostPath, type Locale } from './i18n';
 import type { BlogPost } from './content';
 
+const FALLBACK_SITE = 'https://josecorral.dev';
+
+/**
+ * Canonical site origin. `site` in `astro.config.mjs` is the source of truth;
+ * the fallback only covers a build where it is somehow unset, so callers stop
+ * repeating the domain literal.
+ */
+export function siteUrl(site?: URL | string): URL {
+  if (site !== undefined) return typeof site === 'string' ? new URL(site) : site;
+  return new URL(import.meta.env.SITE || FALLBACK_SITE);
+}
+
 export interface AlternateLink {
   locale: Locale;
   path: string;

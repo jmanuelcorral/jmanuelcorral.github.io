@@ -7,6 +7,8 @@ slug: 'validation-inside-domain-entities'
 pubDate: '2020-06-04T10:31:56-05:00'
 updatedDate: '2026-09-08'
 tags: ['dotnet', 'ddd', 'validation', 'architecture']
+category: 'devops'
+kind: 'Post · Architecture'
 draft: false
 ---
 

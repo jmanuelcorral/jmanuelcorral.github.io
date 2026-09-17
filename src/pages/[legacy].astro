@@ -9,6 +9,7 @@
 import { getCollection } from 'astro:content';
 import { legacyRedirects } from '../data/legacyRedirects';
 import { blogPostPath } from '../lib/i18n';
+import { siteUrl } from '../lib/seo';
 
 export function getStaticPaths() {
   return legacyRedirects.map((redirect) => ({
@@ -49,7 +50,7 @@ if (!target) {
   );
 }
 
-const siteOrigin = Astro.site ?? new URL('https://josecorral.dev');
+const siteOrigin = siteUrl(Astro.site);
 const destinationUrl = new URL(destination, siteOrigin).toString();
 ---
 
