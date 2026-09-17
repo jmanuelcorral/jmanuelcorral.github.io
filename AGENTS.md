@@ -20,7 +20,7 @@ and no server-rendered routes.
 - `src/content.config.ts` — the single content collection (`blog`) schema. Do not
   add new collections or fields without checking every existing post's
   frontmatter for compatibility.
-- `src/content/blog/{es,en}/*.md` — blog posts. Currently 5 Spanish + 5 paired
+- `src/content/blog/{es,en}/*.md` — blog posts. Currently 10 Spanish + 10 paired
   English translations, same filenames in both locale folders.
 - `src/data/legacyRedirects.ts` + `src/pages/[legacy].astro` — static redirect
   stubs for 5 legacy Jekyll URLs, each forwarding to the corresponding Spanish
@@ -28,17 +28,27 @@ and no server-rendered routes.
   Pages has no server-side redirects).
 - `src/lib/` — platform utilities: `i18n.ts` (locale list, path builders),
   `content.ts`, `llms.ts`, `seo.ts` (canonical/hreflang helpers), `structuredData.ts`
-  (JSON-LD), `homeCopy.ts`, `postTaxonomy.ts`.
-- `src/pages/` — routes: `index.astro` (302 redirect `/` → `/es/`), `es/`, `en/`
-  (each with `index.astro`, `blog/`, `rss.xml.ts`), `404.astro`,
+  (JSON-LD), `homeCopy.ts` (composer over `src/copy/`), `postTaxonomy.ts`,
+  `feed.ts` (the shared RSS builder), `filterSection.ts` (shared filter-chip
+  behavior for the posts and labs sections).
+- `src/copy/` — localized static copy split by domain: `site.ts`, `nav.ts`,
+  `hero.ts`, `sections.ts`, `cli.ts`. Re-exported as `HOME_COPY` through
+  `src/lib/homeCopy.ts`, so consumers import from `lib`, not from `copy`.
+- `src/pages/` — routes: `index.astro` (instant meta-refresh `/` → `/es/`,
+  `noindex` + canonical — see §4), `[locale]/[listing].astro` (the `blog` and
+  `experiments` index pages, for both locales), `es/` and `en/` (each with
+  `index.astro`, `blog/[slug].astro`, `rss.xml.ts`), `404.astro`,
   `llms.txt.ts`, `llms-full.txt.ts`, `[legacy].astro`.
 - `src/layouts/`, `src/components/`, `src/styles/` — presentation layer.
 - `public/` — static passthrough assets: design/reference HTML (`cv.html`,
   `resume-short.html`, `resume-extended.html`, `logo-animated.html`,
-  `palette-proposal.html`), `robots.txt`. **CV PDFs are permanently
-  disallowed here** — see §11. No blog post images live here — see §5.
+  `palette-proposal.html`), the social share image `og-image.png` (committed, but
+  regenerate it with `node scripts/build-og-image.mjs` if the brand tokens change),
+  the epoaura post video, and `robots.txt`. **CV PDFs are permanently
+  disallowed here** — see §11. Post media rule: see §6.
 - `newdesign/` — **immutable** visual source of truth. See §4.
-- `.github/workflows/deploy.yml` — GitHub Pages deploy workflow. See §7.
+- `.github/workflows/ci.yml` — quality gate (`check` + content validator + `build`)
+  on every PR. `.github/workflows/deploy.yml` — GitHub Pages deploy workflow. See §7.
 - `dist/`, `.astro/` — build output/types, gitignored, never committed.
 
 ## 3. Local commands and required validation
@@ -47,17 +57,18 @@ and no server-rendered routes.
 npm ci             # install from lockfile — use this, not `npm install`
 npm run dev        # local dev server
 npm run check      # astro check — run before finishing any src/ change
+npm run validate:content  # bilingual content validator (also a CI gate)
 npm run build      # static build to dist/ — must succeed before considering a
                     # change done if it touches src/, content, astro.config.mjs,
                     # content.config.ts, or public/
 npm run preview    # preview the production build locally
+node scripts/build-og-image.mjs  # regenerate public/og-image.png (1200x630)
 ```
 
 There is no test framework (`node:test`, Jest, etc.) and no lint script configured
-in `package.json` — do not invent one. `npm run check` (type-check) and
-`npm run build` are the validation gates for this repo. The `search:index` script
-is an intentional placeholder (Pagefind not wired in yet); do not "fix" it unless
-asked to wire up search.
+in `package.json` — do not invent one. `npm run check` (type-check),
+`npm run validate:content` and `npm run build` are the validation gates for this
+repo.
 
 ## 4. Bilingual content — schema and parity rules
 
@@ -67,8 +78,13 @@ asked to wire up search.
   the other locale's slug and from the filename), `pubDate`, optional
   `updatedDate`, `tags[]`, `draft` (default `false`), and `legacyPath` — **valid
   only on `lang: 'es'` entries** (schema-enforced via `.refine`).
-- Routes: `/es/blog/<slug>/`, `/en/blog/<slug>/`, `/es/`, `/en/`, `/` → 302 to
-  `/es/`. `trailingSlash: 'always'` — always include the trailing slash.
+- Routes: `/es/blog/<slug>/`, `/en/blog/<slug>/`, `/es/`, `/en/`,
+  `/es/blog/`, `/en/blog/`, `/es/experiments/`, `/en/experiments/`, and `/` →
+  `/es/`. The root is **not** a 302: static output cannot issue one, so
+  `src/pages/index.astro` emits `<meta http-equiv="refresh" content="0;url=/es/">`
+  with `robots: noindex` and a canonical pointing at `/es/`, and the sitemap filter
+  drops it (a `noindex` URL must not be advertised). `trailingSlash: 'always'` —
+  always include the trailing slash.
 - When adding or editing a post, keep the `es`/`en` pair in sync: same
   `translationKey`, consistent `draft`/`pubDate` intent, and matching tags where
   the content overlaps. If only one locale is ready, add it with `draft: true`
@@ -105,10 +121,13 @@ asked to wire up search.
 
 ## 6. No legacy post images
 
-The blog has no post images (legacy Jekyll images were intentionally dropped
-during the Astro migration). Do not add new images to blog posts, and do not
-"restore" legacy image references, unless explicitly asked. This is separate
-from the design/CV assets in `public/`, which are expected and allowed.
+The blog carries no legacy Jekyll images — they were intentionally dropped during
+the Astro migration, and "restoring" those references is off-limits. The single
+media asset a post embeds is `public/epoaura-pantalla.mp4` (~380K), used by the
+epoaura post in both locales through a `<video>` tag; that embedding is a
+deliberate choice, not leftover. Adding new post imagery is a decision to raise
+with the owner rather than something to default to. This is separate from the
+design/CV assets in `public/`, which are expected and allowed.
 
 ## 7. SEO / RSS / sitemap / llms / redirect invariants
 
@@ -210,10 +229,11 @@ based on this section alone:
   `.copilot/skills/squad-conventions` describes an unrelated npm CLI tool's own
   codebase conventions (zero-dependency Node package, `node:test`), not this
   Astro site — treat as not applicable here.
-- **Promote from `.squad/templates/skills/` (adapt, don't copy verbatim):**
-  `pr-screenshots` — genuinely useful for visually verifying UI changes against
-  `newdesign/`, but should be paired with repo-specific design-token/breakpoint
-  checks rather than used generically.
+- **No longer applicable:** the `.squad/templates/skills/` copies (including
+  `pr-screenshots`) were removed along with the rest of `.squad/` in the P3
+  cleanup, so there is nothing left to promote from there. If screenshot-based
+  verification of UI changes against `newdesign/` is wanted, author it fresh under
+  one of the official skill locations rather than resurrecting the Squad copy.
 - **Worth authoring later (repo-specific, do not exist yet):**
   1. *Bilingual parity check* — validate `es`/`en` `translationKey` pairing,
      slug uniqueness, and `legacyPath`/draft consistency before merging content.
@@ -224,13 +244,13 @@ based on this section alone:
 
 Official project-skill locations per GitHub Docs are `.github/skills`,
 `.claude/skills`, `.agents/skills` (repo-scoped) and `~/.copilot/skills`,
-`~/.agents/skills` (personal, home-directory). This repo's active skills
-instead live in a project-root `.copilot/skills/` and `.squad/templates/skills/`
-— **these are Squad's own playbook convention, not one of the four officially
-documented locations above.** Do not treat project-root `.copilot/skills/` as
-equivalent to the official repo-scoped paths (`.github/skills`,
-`.claude/skills`, `.agents/skills`) for discovery/precedence purposes; verify
-against current docs before depending on it being picked up the same way.
+`~/.agents/skills` (personal, home-directory). This repo's remaining skills live
+in a project-root `.copilot/skills/` — a leftover from Squad's own playbook
+convention, **not one of the officially documented locations above.** Do not
+treat project-root `.copilot/skills/` as equivalent to the official repo-scoped
+paths (`.github/skills`, `.claude/skills`, `.agents/skills`) for
+discovery/precedence purposes; verify against current docs before depending on it
+being picked up the same way.
 
 ## 13. Reference
 
