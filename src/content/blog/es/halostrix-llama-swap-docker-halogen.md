@@ -3,7 +3,7 @@ title: 'Menos espera, más agentes: así renové mi stack de IA local'
 description: 'De Lemonade y Vulkan a llama-swap, Docker y Halogen: cómo renové mi stack de IA local para poner a trabajar agentes. Rendimiento, decisiones y resultados explicados sin una sopa de siglas.'
 lang: 'es'
 translationKey: 'halostrix-llama-swap-docker-halogen'
-slug: 'de-12-t-s-a-128k-fontaneria-halo-strix'
+slug: 'menos-espera-mas-agentes-stack-ia-local'
 pubDate: '2026-09-18T10:00:00+02:00'
 tags: ['experiment', 'local-ai', 'amd', 'strix-halo', 'llama-swap', 'docker', 'halogen', 'qwen', 'inference']
 category: 'ai'

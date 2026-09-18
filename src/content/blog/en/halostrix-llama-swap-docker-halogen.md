@@ -3,7 +3,7 @@ title: 'Less waiting, more agents: upgrading my local AI stack'
 description: 'From Lemonade and Vulkan to llama-swap, Docker and Halogen: how I upgraded my local AI stack to put agents to work. Performance, decisions and results without the alphabet soup.'
 lang: 'en'
 translationKey: 'halostrix-llama-swap-docker-halogen'
-slug: 'from-12-tps-to-128k-halo-strix-plumbing'
+slug: 'less-waiting-more-agents-local-ai-stack'
 pubDate: '2026-09-18T10:00:00+02:00'
 tags: ['experiment', 'local-ai', 'amd', 'strix-halo', 'llama-swap', 'docker', 'halogen', 'qwen', 'inference']
 category: 'ai'

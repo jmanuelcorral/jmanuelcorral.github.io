@@ -7,6 +7,10 @@ export default defineConfig({
   site: 'https://josecorral.dev',
   output: 'static',
   trailingSlash: 'always',
+  redirects: {
+    '/es/blog/de-12-t-s-a-128k-fontaneria-halo-strix/': '/es/blog/menos-espera-mas-agentes-stack-ia-local/',
+    '/en/blog/from-12-tps-to-128k-halo-strix-plumbing/': '/en/blog/less-waiting-more-agents-local-ai-stack/',
+  },
   // No UI framework integrations: components are plain Astro/HTML/CSS with
   // no client-side hydration, per the provisional-skeleton contract.
   integrations: [
@@ -30,6 +34,8 @@ export default defineConfig({
           '/Add-Elk-to-aspnetcore/',
           '/Get-Coberture-working/',
           '/Validation-on-Entities/',
+          '/es/blog/de-12-t-s-a-128k-fontaneria-halo-strix/',
+          '/en/blog/from-12-tps-to-128k-halo-strix-plumbing/',
         ].some((legacy) => page.endsWith(legacy)),
     }),
   ],
