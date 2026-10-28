@@ -122,10 +122,11 @@ repo.
 ## 6. No legacy post images
 
 The blog carries no legacy Jekyll images — they were intentionally dropped during
-the Astro migration, and "restoring" those references is off-limits. The single
-media asset a post embeds is `public/epoaura-pantalla.mp4` (~380K), used by the
-epoaura post in both locales through a `<video>` tag; that embedding is a
-deliberate choice, not leftover. Adding new post imagery is a decision to raise
+the Astro migration, and "restoring" those references is off-limits. The only media
+assets posts embed are `public/epoaura-pantalla.mp4` (~380K, the epoaura post)
+and `public/bond-orquestador.mp4` (~4M, the bond post), each used in both
+locales through a `<video>` tag; those embeddings are deliberate choices made
+by the owner, not leftovers. Adding new post imagery is a decision to raise
 with the owner rather than something to default to. This is separate from the
 design/CV assets in `public/`, which are expected and allowed.
 
