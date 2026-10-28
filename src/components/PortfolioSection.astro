@@ -211,8 +211,9 @@ const copy = HOME_COPY[locale];
     text-decoration: underline;
   }
 
+  /* Deviates from newdesign (`.flag` spans 2 columns there): with two
+     flagship repos, each takes one column so they sit side by side. */
   .flag {
-    grid-column: span 2;
     background:
       linear-gradient(135deg, var(--copper-soft), transparent 62%),
       var(--surface);
@@ -220,11 +221,6 @@ const copy = HOME_COPY[locale];
   }
   .flag:hover {
     border-color: var(--copper) !important;
-  }
-  @media (max-width: 600px) {
-    .flag {
-      grid-column: span 1;
-    }
   }
   .flag .badge {
     font-family: var(--font-mono);

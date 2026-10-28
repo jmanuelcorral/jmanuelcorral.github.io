@@ -19,12 +19,12 @@ export const SEO_COPY: Record<Locale, SeoCopy> = {
   es: {
     title: 'José Manuel Corral — Cloud & AI · Open Source',
     description:
-      'Cloud Solution Architect especializado en Azure, IA, arquitecturas multi-agente y RAG. Portfolio open source, CV y experimentos de IA local.',
+      'AI Software Architect especializado en Azure, IA, arquitecturas multi-agente y RAG. Portfolio open source, CV y experimentos de IA local.',
   },
   en: {
     title: 'José Manuel Corral — Cloud & AI · Open Source',
     description:
-      'Cloud Solution Architect specialized in Azure, AI, multi-agent architectures and RAG. Open source portfolio, résumé and local-AI experiments.',
+      'AI Software Architect specialized in Azure, AI, multi-agent architectures and RAG. Open source portfolio, résumé and local-AI experiments.',
   },
 };
 
@@ -32,13 +32,13 @@ export const FOOT_COPY: Record<Locale, FootCopy> = {
   es: {
     code: 'Código →',
     docs: 'Documentación →',
-    role: 'Cloud Solution Architect',
+    role: 'AI Software Architect',
     cvStandard: 'CV standard',
   },
   en: {
     code: 'Code →',
     docs: 'Documentation →',
-    role: 'Cloud Solution Architect',
+    role: 'AI Software Architect',
     cvStandard: 'CV standard',
   },
 };

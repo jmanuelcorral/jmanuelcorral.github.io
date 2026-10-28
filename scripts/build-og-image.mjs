@@ -58,7 +58,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${
   ${mark(96, 96, 132)}
 
   <text x="96" y="352" fill="${FG}" font-family="Helvetica, Arial, sans-serif" font-size="72" font-weight="700" letter-spacing="-1.5">José Manuel Corral</text>
-  <text x="96" y="412" fill="${MUTED}" font-family="Helvetica, Arial, sans-serif" font-size="34" font-weight="400">Cloud Solution Architect · IA · Open source</text>
+  <text x="96" y="412" fill="${MUTED}" font-family="Helvetica, Arial, sans-serif" font-size="34" font-weight="400">AI Software Architect · IA · Open source</text>
 
   <g font-family="monospace" font-size="22" letter-spacing="1.5">
     <text x="96" y="512" fill="${ACCENT}">josecorral.dev</text>
